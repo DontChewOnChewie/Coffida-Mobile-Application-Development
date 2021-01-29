@@ -1,13 +1,20 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import Login from './components/screens/login';
+import Home from './components/screens/home';
+import Location from './components/screens/location';
+import User from './components/screens/user';
+import Search from './components/screens/search';
+import { NavigationContainer } from '@react-navigation/native';
+
 
 const App = () => {
 
   return (
-    <View style={styles.container}>
-      <Login></Login>
-    </View>
+      <View>
+        <NavigationContainer></NavigationContainer>
+      </View>
   );
 
 };
