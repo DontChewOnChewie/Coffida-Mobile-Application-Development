@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState, useEffect } from 'react';
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, FlatList } from 'react-native';
+import { Button } from 'react-native-paper';
 import NavBar from '../../navbar'
 import styles from './styles'
 
@@ -9,36 +9,38 @@ const Home = (props) => {
     const [locations, setLocations] = useState([]);
 
     useEffect( () => {
-        const get_shops = async () => {
-            for (let i = 1; i < 6; i++) {
-                let item = await get_shop_data(i);
-                console.log(item);
+        get_shop_data();
+    }, []);
+
+    const get_shop_data = () => {
+        let ret_val = []
+        for (let i = 1; i < 6; i++) {
+            fetch(`http://10.0.2.2:3333/api/1.0.0/location/${i}`, {
+                method : "get",
+                headers: {
+                    'Content-Type': "application/json" 
+                },
+            })
+            .then( (res) => {
+            if (res.status == 200) {
+                return res.json();
             }
-            setLoading(false); 
+            else console.log("Something went wrong with the status.");
+            })
+            .then( (data) => {
+                ret_val.push(data);
+            })
+            .catch( (message) => { console.log("ERROR " + message); });
         }
 
-        get_shops();
+        setLoading(false);
+        setLocations(ret_val);
+    }
 
-    });
-
-    const get_shop_data = (id) => {
-        return fetch(`http://10.0.2.2:3333/api/1.0.0/location/${id}`, {
-            method : "get",
-            headers: {
-                'Content-Type': "application/json" 
-            },
-        })
-        .then( (res) => {
-        if (res.status == 200) {
-            return res.json();
-        }
-        else console.log("Something went wrong with the status.");
-        })
-        .then( (data) => {
-            locations.push(data);
-            setLocations(locations);
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
+    const render_item = (name) => {
+        return (
+            <Text>{name}</Text>
+        );
     }
 
     if (loading) {
@@ -51,11 +53,12 @@ const Home = (props) => {
     } else {
         return (
             <View style={styles.container}>
+                <Button onPress={() => console.log(JSON.stringify(locations, null, 4))}>Get Locations Data</Button>
                 <FlatList
+                style={styles.list}
                 data={locations}
-                renderItem={({ item, index }) =>
-                <Text>{item.location_id}</Text>
-                }/>
+                keyExtractor={ item => item.location_id.toString() }
+                renderItem={ item => render_item(item.location_name) }/>
                 <NavBar></NavBar>
             </View>
         ); 
