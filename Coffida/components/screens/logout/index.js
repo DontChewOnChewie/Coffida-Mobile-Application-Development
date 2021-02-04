@@ -1,12 +1,14 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Button} from 'react-native';
+import { View } from 'react-native';
+import { Text, Button, Paragraph, Subheading } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 
 const Logout = (props) => {
 
     const try_logout = async () => {
-        let token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token;
+        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
+        catch (error) { return; /* Catch for if no token stored. */ }
 
         fetch("http://10.0.2.2:3333/api/1.0.0/user/logout", {
             method : "post",
@@ -26,20 +28,15 @@ const Logout = (props) => {
     }
 
     return (
-        <View>
-            <Text>If you log out you will not be able to leave reviews for any coffee shop.</Text>
+        <View style={styles.container}>
+            <Subheading style={styles.message}>If you log out you will not be able to leave reviews for any coffee shop.</Subheading>
 
-            <TouchableOpacity>
-                <Button
-                onPress={ try_logout }
-                title="Logout"/>
-            </TouchableOpacity>
-
-            <TouchableOpacity>
-                <Button
-                onPress= { AsyncStoreHelper.get_credentials }
-                title="Get Credentials"/>
-            </TouchableOpacity>
+            <Button
+            style={styles.loginButton}
+            mode="contained"
+            icon="door-open"
+            onPress={ () => try_logout() }
+            >Logout</Button>
         </View>
     );
 

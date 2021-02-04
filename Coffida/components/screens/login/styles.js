@@ -9,20 +9,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 
+    header : {
+        fontSize: 62,
+        fontWeight: 'bold',
+        color: '#FFFFFF'
+    },
+
     input : {
-        backgroundColor: 'red',
-        width: '50%',
+        width: '60%',
+        height: 40,
+        marginBottom: 10,
     },
 
     loginButton : {
-        backgroundColor: 'blue',
-        width: '50%',
-        alignItems: 'center',
+        width: '60%',
     },  
-
-    loginButtonText : {
-        color: 'white',
-    },
 
 });
 

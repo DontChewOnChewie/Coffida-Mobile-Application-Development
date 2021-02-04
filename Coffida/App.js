@@ -3,12 +3,13 @@ import {Text, View, StyleSheet} from 'react-native';
 import SignUp from './components/screens/signup';
 import Login from './components/screens/login';
 import Logout from './components/screens/logout';
+import Home from './components/screens/home'
 
 const App = () => {
 
   return (
     <View style={styles.container}>
-      <Logout/>
+      <Home/>
     </View>
   );
 

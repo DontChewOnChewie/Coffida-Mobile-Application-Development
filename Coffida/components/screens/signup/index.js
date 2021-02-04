@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity } from 'react-native';
+import { ImageBackground, View } from 'react-native';
+import { TextInput, Text, Button } from 'react-native-paper';
 import styles from './styles';
 
 const SignUp = (props) => {
@@ -24,6 +25,7 @@ const SignUp = (props) => {
         })
         .then( (res) => {
            if (res.status == 201) {
+               console.log("Good Status");
                return res.json();
            }
            else console.log("Something went wrong with the status.");
@@ -35,33 +37,43 @@ const SignUp = (props) => {
     }
 
     return (
-        <View>
+        <ImageBackground source={require('../../../images/loginBG.jpg')}
+        style={styles.container}>
+
+            <Text style={styles.header}>Sign Up</Text>
+
             <TextInput
+            mode="outlined"
             style={styles.input}
             onChangeText={ text => setFirstName(text) }
             placeholder={"First Name..."}/>
 
             <TextInput
+            mode="outlined"
             style={styles.input}
             onChangeText={ text => setSecondName(text) }
             placeholder={"Second Name..."}/>
 
             <TextInput
+            mode="outlined"
             style={styles.input}
             onChangeText={ text => setEmail(text) }
             placeholder={"Email Address..."}/>
 
             <TextInput
+            mode="outlined"
             style={styles.input}
             onChangeText={ text => setPassword(text) }
             placeholder={"Password..."}
             secureTextEntry={true}/>        
 
-            <TouchableOpacity
-            onPress={ attemptSignUp }>
-                <Text>Sign Up</Text>
-            </TouchableOpacity>
-        </View>
+            <Button
+            style={styles.loginButton}
+            mode="contained"
+            icon="arrow-right"
+            onPress={ () => attemptSignUp() }>
+            Sign Up</Button>
+        </ImageBackground>
     );
 
 }

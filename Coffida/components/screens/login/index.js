@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity, Button} from 'react-native';
+import { ImageBackground } from 'react-native';
+import { Button, TextInput, Text } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
+import Background from './../../../images/loginBG.jpg';
 
 const Login = (props) => {
     const [email, setEmail] = useState("");
@@ -31,33 +33,35 @@ const Login = (props) => {
     };
 
     return (
-        <View style={styles.container}>
 
-            <TextInput
-            style={styles.input}
-            onChangeText={ text => setEmail(text) }
-            placeholder={"Email Address..."}/>
+            <ImageBackground 
+                source={require('../../../images/loginBG.jpg')}
+                style={styles.container} 
+            >
 
-            <TextInput
-            style={styles.input}
-            onChangeText={ text => setPassword(text) }
-            placeholder={"Password..."}
-            secureTextEntry={true}/>
+                <Text style={styles.header}>Sign In</Text>
 
-            <TouchableOpacity
-            style={styles.loginButton}>
+                <TextInput
+                mode="outlined"
+                style={styles.input}
+                onChangeText={ text => setEmail(text) }
+                placeholder={"Email Address..."}/>
+
+                <TextInput
+                mode="outlined"
+                style={styles.input}
+                onChangeText={ text => setPassword(text) }
+                placeholder={"Password..."}
+                secureTextEntry={true}/>
+
                 <Button
-                onPress={ try_login }
-                title="Log In"/>
-            </TouchableOpacity>
+                mode="contained"
+                icon="arrow-right"
+                style={styles.loginButton}
+                onPress={ () => try_login() }
+                >Log In</Button>
 
-            <TouchableOpacity>
-                <Button
-                onPress={ AsyncStoreHelper.get_credentials }
-                title="Creds"/>
-            </TouchableOpacity>
-
-        </View>
+            </ImageBackground>
     );
 };
 
