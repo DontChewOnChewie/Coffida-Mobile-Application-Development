@@ -3,13 +3,14 @@ import {Text, View, StyleSheet} from 'react-native';
 import SignUp from './components/screens/signup';
 import Login from './components/screens/login';
 import Logout from './components/screens/logout';
-import Home from './components/screens/home'
+import Home from './components/screens/home';
+import User from './components/screens/user';
 
 const App = () => {
 
   return (
     <View style={styles.container}>
-      <Home/>
+      <User id="8"/>
     </View>
   );
 
