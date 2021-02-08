@@ -6,7 +6,7 @@ const get_credentials = async () => {
     try {
         const credentials = await AsyncStorage.getItem(credentialsKey);
         if (credentials !== null) return credentials;
-        else console.log("No Credentials stored.");
+        else return null;
     } catch (error) { /* Error Occured */ }
 };   
 

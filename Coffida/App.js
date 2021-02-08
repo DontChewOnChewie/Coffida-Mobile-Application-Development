@@ -5,12 +5,13 @@ import Login from './components/screens/login';
 import Logout from './components/screens/logout';
 import Home from './components/screens/home';
 import User from './components/screens/user';
+import Location from './components/screens/location';
 
 const App = () => {
 
   return (
     <View style={styles.container}>
-      <User id="8"/>
+      <Location id="3"/>
     </View>
   );
 
