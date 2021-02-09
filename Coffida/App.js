@@ -11,7 +11,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <Location id="3"/>
+      <Location id="4"/>
     </View>
   );
 
