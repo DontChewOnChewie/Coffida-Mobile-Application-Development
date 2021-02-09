@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const DUMMY_IMG_PATH = 'http://cdn.dummyphoto.com';
 const DEFAULT_IMG_PATH = 'http://innovate.bunzlcatering.co.uk/wp-content/uploads/2015/06/coffee-shop-1.jpg';
 const FAVOURITE_COLOUR = '#6200ee';
-const UNFAVOURITE_COLOR = '#df5050';
+const UNFAVOURITE_COLOR = '#b1b1b1';
 
 const LocationObject = ({location, navButton}) => {
     const [favourite, setFavourite] = useState(false);
@@ -35,7 +35,6 @@ const LocationObject = ({location, navButton}) => {
         })
         .then( (data) => {
             const faves = data.favourite_locations;
-            console.log(JSON.stringify(location, null, 4));
             const is_favourite = (faves.filter(fave => fave.location_id === location.location_id).length) > 0;
             is_favourite ? setIconColour(FAVOURITE_COLOUR) : setIconColour(UNFAVOURITE_COLOR);
             setFavourite(is_favourite);
@@ -58,7 +57,7 @@ const LocationObject = ({location, navButton}) => {
            if (res.status == 200) {
                console.log("Hit API Success");
                favourite ? setIconColour(UNFAVOURITE_COLOR) : setIconColour(FAVOURITE_COLOUR);
-               setFavourite(!favourite);
+               setFavourite(prevFavourite => !prevFavourite);
                ToastAndroid.showWithGravity(favourite ? "Removed from Favourite" : "Added to Favourites", ToastAndroid.SHORT, ToastAndroid.CENTER);
            }
            else console.log("Something went wrong with the status.");
@@ -81,16 +80,16 @@ const LocationObject = ({location, navButton}) => {
 
     return (
         <Card>
-            <Card.Content>
-                <View style={styles.titleContainer}>
-                    <Title>{location.location_town}</Title>
-                    <TouchableOpacity
-                    onPress={ handle_favourite_btn_click }>
-                        <Icon name="star" size={25} color={iconColour}/>
-                    </TouchableOpacity>
-                </View>
-                <Paragraph>{location.location_name}</Paragraph>
-            </Card.Content>
+            <Card.Title
+            title={location.location_name}
+            subtitle={location.location_town}
+            left={props => (
+                <TouchableOpacity
+                onPress={ handle_favourite_btn_click }>
+                    <Icon name="star" size={25} color={iconColour}/>
+                </TouchableOpacity>
+            )}>
+            </Card.Title>
             <Card.Cover source={{ uri: locationImage }} />
             <Card.Actions style={styles.cardActions}>
                 { navButton ? (

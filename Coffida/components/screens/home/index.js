@@ -4,7 +4,7 @@ import { TextInput, Text } from 'react-native-paper';
 import NavBar from '../../navbar'
 import styles from './styles'
 import AsyncStoreHelper from '../../AsyncStoreHelper';
-import LocationObject from '../../LocationObject/LocationObject';
+import LocationObject from '../../LocationObject';
 
 const Home = (props) => {
     const [loading, setLoading] = useState(true);

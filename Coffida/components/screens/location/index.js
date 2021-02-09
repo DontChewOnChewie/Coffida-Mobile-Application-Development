@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import {TouchableOpacity, View, ToastAndroid} from 'react-native';
-import { Card, Text, Title, Paragraph, Button } from 'react-native-paper';
+import {TouchableOpacity, View, ToastAndroid, FlatList} from 'react-native';
+import { Card, Text, Title, Paragraph, Button, Subheading } from 'react-native-paper';
 import styles from './styles';
 import NavBar from '../../navbar';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
-import LocationObject from '../../LocationObject/LocationObject';
+import LocationObject from '../../LocationObject';
+import ReviewObject from '../../ReviewObject'
 
 const Location = (props) => {
     const [location, setLocation] = useState('');
-    const [locationImage, setLocationImage] = useState('');
-    const [favourite, setFavourite] = useState(false);
-    const [favouriteIconColour, setFavouriteIconColour] = useState('#df5050');
+    const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const get_location_details = async () => {
@@ -28,6 +27,7 @@ const Location = (props) => {
         })
         .then( (data) => {
             setLocation(data);
+            setReviews(data.location_reviews);
             setLoading(false);
         })
         .catch( (message) => { console.log("ERROR " + message); });
@@ -48,6 +48,14 @@ const Location = (props) => {
                 location={location}
                 navButton={false}
                 />
+
+                <Subheading style={styles.commentTitle}>Comments : {reviews.length}</Subheading>
+                <FlatList
+                data={reviews}
+                keyExtractor={item => item.review_id.toString()}
+                renderItem={({ item }) => ( 
+                    <ReviewObject review={item} locationId={location.location_id}/>
+                )}/>
                 <NavBar/>
             </View>
         ); 
