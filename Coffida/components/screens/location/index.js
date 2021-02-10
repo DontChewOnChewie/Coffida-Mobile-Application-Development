@@ -49,12 +49,20 @@ const Location = (props) => {
                 navButton={false}
                 />
 
-                <Subheading style={styles.commentTitle}>Comments : {reviews.length}</Subheading>
+                <View style={styles.reiviewHeadingWrapper}>
+                    <Subheading>Reviews : {reviews.length}</Subheading>
+                    <Button
+                    style={styles.leaveReviewButton}
+                    mode="contained"
+                    icon="arrow-right">
+                    Leave Review</Button>
+                </View>
+
                 <FlatList
                 data={reviews}
                 keyExtractor={item => item.review_id.toString()}
                 renderItem={({ item }) => ( 
-                    <ReviewObject review={item} locationId={location.location_id}/>
+                    <ReviewObject review={item} locationId={location.location_id} reviewListState={[reviews, setReviews]}/>
                 )}/>
                 <NavBar/>
             </View>

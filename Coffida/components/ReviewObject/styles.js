@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         width: '20%',
-        justifyContent: 'space-between'
+        justifyContent: 'flex-start'
     },
 
     likeText : {
-        marginRight: 10,
+        marginRight: 10
     },
 
     divider: {

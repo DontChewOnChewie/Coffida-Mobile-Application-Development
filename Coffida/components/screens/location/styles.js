@@ -8,12 +8,20 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
 
-    commentTitle : {
-        marginTop: 10,
+    reiviewHeadingWrapper: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         padding: 10,
+        marginTop: 10,
         borderBottomColor: '#6200ee',
         borderBottomWidth: 2,
-    },  
+    },
+
+    leaveReviewButton : {
+        width: '40%',
+    }
 
 });
 
