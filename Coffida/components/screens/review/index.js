@@ -4,13 +4,14 @@ import { Button, TextInput, Title } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 
-const Review = ({location_id, rev}) => {
+const Review = ({navigation, route}) => {
     const [priceRating, setPriceRating] = useState('');
     const [qualityRating, setQualityRating] = useState('');
     const [clenlisnessRating, setClenlisnessRating] = useState('');
     const [reviewBody, setReviewBody] = useState('');
     const [review, setReview] = useState(undefined);
     const [cameraScreen, setCameraScreen] = useState(false);
+    const {location_id, previous_review} = route.params;
 
     const submitReview = async () => {
         try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
@@ -67,12 +68,12 @@ const Review = ({location_id, rev}) => {
     }
     
     useEffect(() => {
-        if (rev !== undefined) {
-            setReview(rev);
-            setPriceRating(rev.price_rating);
-            setQualityRating(rev.quality_rating);
-            setClenlisnessRating(rev.clenliness_rating);
-            setReviewBody(rev.review_body);
+        if (previous_review !== undefined) {
+            setReview(previous_review);
+            setPriceRating(previous_review.price_rating);
+            setQualityRating(previous_review.quality_rating);
+            setClenlisnessRating(previous_review.clenliness_rating);
+            setReviewBody(previous_review.review_body);
         }
     }, []);
 

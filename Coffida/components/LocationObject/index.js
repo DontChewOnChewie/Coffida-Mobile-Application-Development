@@ -10,7 +10,7 @@ const DEFAULT_IMG_PATH = 'http://innovate.bunzlcatering.co.uk/wp-content/uploads
 const FAVOURITE_COLOUR = '#6200ee';
 const UNFAVOURITE_COLOR = '#b1b1b1';
 
-const LocationObject = ({location, navButton}) => {
+const LocationObject = ({location, navButton, navigation}) => {
     const [favourite, setFavourite] = useState(false);
     const [iconColour, setIconColour] = useState(UNFAVOURITE_COLOR);
     const [locationImage, setLocationImage] = useState('');
@@ -94,6 +94,7 @@ const LocationObject = ({location, navButton}) => {
             <Card.Actions style={styles.cardActions}>
                 { navButton ? (
                     <Button
+                    onPress={() => navigation.navigate('Location', { id: location.location_id })}
                     mode="contained"
                     icon="arrow-right"
                     >

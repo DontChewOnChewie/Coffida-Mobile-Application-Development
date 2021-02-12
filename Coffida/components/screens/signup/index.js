@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { ImageBackground, View } from 'react-native';
 import { TextInput, Text, Button } from 'react-native-paper';
 import styles from './styles';
+import AsyncStoreHelper from '../../AsyncStoreHelper';
+import { useEffect } from 'react';
 
-const SignUp = (props) => {
+const SignUp = ({navigation}) => {
 
     const [firstName, setFirstName] = useState("");
     const [secondName, setSecondName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const [loading, setLoading] = useState(true);
 
     const attemptSignUp = async () => {
         fetch("http://10.0.2.2:3333/api/1.0.0/user", {
@@ -32,49 +36,65 @@ const SignUp = (props) => {
         })
         .then( (data) => {
             console.log(data);
+            navigation.navigate("Login");
         })
         .catch( (message) => { console.log("ERROR " + message); });
     }
 
-    return (
-        <ImageBackground source={require('../../../images/loginBG.jpg')}
-        style={styles.container}>
+    const get_credentials = async () => {
+        const creds = await AsyncStoreHelper.get_credentials();
+        creds !== null ? navigation.navigate("Home") : setLoading(false);
+    }
 
-            <Text style={styles.header}>Sign Up</Text>
+    useEffect(() => {
+        get_credentials();
+    }, []);
 
-            <TextInput
-            mode="outlined"
-            style={styles.input}
-            onChangeText={ text => setFirstName(text) }
-            placeholder={"First Name..."}/>
+    if (loading) {
+        return (
+            <Text>Loading</Text>
+        );
+    } else {
+        return (
+            <ImageBackground source={require('../../../images/loginBG.jpg')}
+            style={styles.container}>
 
-            <TextInput
-            mode="outlined"
-            style={styles.input}
-            onChangeText={ text => setSecondName(text) }
-            placeholder={"Second Name..."}/>
+                <Text style={styles.header}>Sign Up</Text>
 
-            <TextInput
-            mode="outlined"
-            style={styles.input}
-            onChangeText={ text => setEmail(text) }
-            placeholder={"Email Address..."}/>
+                <TextInput
+                mode="outlined"
+                style={styles.input}
+                onChangeText={ text => setFirstName(text) }
+                placeholder={"First Name..."}/>
 
-            <TextInput
-            mode="outlined"
-            style={styles.input}
-            onChangeText={ text => setPassword(text) }
-            placeholder={"Password..."}
-            secureTextEntry={true}/>        
+                <TextInput
+                mode="outlined"
+                style={styles.input}
+                onChangeText={ text => setSecondName(text) }
+                placeholder={"Second Name..."}/>
 
-            <Button
-            style={styles.loginButton}
-            mode="contained"
-            icon="arrow-right"
-            onPress={ () => attemptSignUp() }>
-            Sign Up</Button>
-        </ImageBackground>
-    );
+                <TextInput
+                mode="outlined"
+                style={styles.input}
+                onChangeText={ text => setEmail(text) }
+                placeholder={"Email Address..."}/>
+
+                <TextInput
+                mode="outlined"
+                style={styles.input}
+                onChangeText={ text => setPassword(text) }
+                placeholder={"Password..."}
+                secureTextEntry={true}/>        
+
+                <Button
+                style={styles.loginButton}
+                mode="contained"
+                icon="arrow-right"
+                onPress={ () => attemptSignUp() }>
+                Sign Up</Button>
+            </ImageBackground>
+        );
+    }
 
 }
 

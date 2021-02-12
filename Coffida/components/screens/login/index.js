@@ -5,7 +5,7 @@ import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import Background from './../../../images/loginBG.jpg';
 
-const Login = (props) => {
+const Login = ({navigation}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -28,6 +28,7 @@ const Login = (props) => {
         })
         .then( (data) => {
             AsyncStoreHelper.store_credentials(data);
+            navigation.navigate("Home");
         })
         .catch( (message) => { console.log("ERROR " + message); });
     };

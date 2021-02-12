@@ -8,7 +8,7 @@ import AsyncStoreHelper from '../AsyncStoreHelper';
 const LIKE_COLOR = '#6200ee';
 const UNLIKE_COLOR = '#b1b1b1';
 
-const ReviewObject = ({review, locationId, reviewListState}) => {
+const ReviewObject = ({review, locationId, reviewListState, navigation}) => {
     const [liked, setLiked] = useState(false);
     const [iconColour, setIconColour] = useState(UNLIKE_COLOR);
     const [isUsers, setIsUsers] = useState(false);
@@ -118,7 +118,9 @@ const ReviewObject = ({review, locationId, reviewListState}) => {
             { isUsers ? (
             <Card.Actions>
                 <View style={[styles.cardActions, {justifyContent: 'flex-start'}]}>
-                    <TouchableOpacity style={{flexDirection: 'row'}}>
+                    <TouchableOpacity 
+                    onPress={() => navigation.navigate("Review", {location_id: locationId, previous_review: review})}
+                    style={{flexDirection: 'row'}}>
                         <Icon name="edit" size={25} color={LIKE_COLOR}></Icon>
                         <Paragraph>Edit</Paragraph>
                     </TouchableOpacity>

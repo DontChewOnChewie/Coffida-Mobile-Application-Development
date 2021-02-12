@@ -12,10 +12,10 @@ const User = (props) => {
     const [password, setPassword] = useState("");
 
     const get_user_details = async () => {
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
+        try { var {token, id } =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
         catch (error) { return; /* Catch for if no token stored. */ }
 
-        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${props.id}`, {
+        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
             method : "get",
             headers: {
                 'Content-Type': "application/json",
@@ -48,10 +48,10 @@ const User = (props) => {
 
     const change_user_details = async() => {
         const user_changes = get_user_detail_changes_object();
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
+        try { var {token, id} =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
         catch (error) { return; /* Catch for if no token stored. */ }
 
-        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${props.id}`, {
+        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
             method : "patch",
             headers: {
                 'Content-Type': "application/json",
@@ -112,7 +112,6 @@ const User = (props) => {
             mode="contained"
             onPress={ () => change_user_details() }>
             Update Details</Button>
-            <NavBar/>
         </View>
     ); 
 

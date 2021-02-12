@@ -7,13 +7,14 @@ import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
 import ReviewObject from '../../ReviewObject'
 
-const Location = (props) => {
+const Location = ({navigation, route}) => {
     const [location, setLocation] = useState('');
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const location_id = route.params.id;
 
     const get_location_details = async () => {
-        await fetch(`http://10.0.2.2:3333/api/1.0.0/location/${props.id}`, {
+        await fetch(`http://10.0.2.2:3333/api/1.0.0/location/${location_id}`, {
             method : "get",
             headers: {
                 'Content-Type': "application/json"
@@ -52,6 +53,7 @@ const Location = (props) => {
                 <View style={styles.reiviewHeadingWrapper}>
                     <Subheading>Reviews : {reviews.length}</Subheading>
                     <Button
+                    onPress={() => navigation.navigate("Review", {location_id: location_id, previous_review: undefined})}
                     style={styles.leaveReviewButton}
                     mode="contained"
                     icon="arrow-right">
@@ -62,9 +64,8 @@ const Location = (props) => {
                 data={reviews}
                 keyExtractor={item => item.review_id.toString()}
                 renderItem={({ item }) => ( 
-                    <ReviewObject review={item} locationId={location.location_id} reviewListState={[reviews, setReviews]}/>
+                    <ReviewObject review={item} locationId={location.location_id} reviewListState={[reviews, setReviews]} navigation={navigation}/>
                 )}/>
-                <NavBar/>
             </View>
         ); 
     }
