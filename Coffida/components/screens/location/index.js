@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {TouchableOpacity, View, ToastAndroid, FlatList} from 'react-native';
-import { Card, Text, Title, Paragraph, Button, Subheading } from 'react-native-paper';
+import { View, FlatList} from 'react-native';
+import { Title, Button, Subheading } from 'react-native-paper';
 import styles from './styles';
-import NavBar from '../../navbar';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
 import ReviewObject from '../../ReviewObject'

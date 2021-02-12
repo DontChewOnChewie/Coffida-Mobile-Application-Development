@@ -32,11 +32,9 @@ const SignUp = ({navigation}) => {
                console.log("Good Status");
                return res.json();
            }
-           else console.log("Something went wrong with the status.");
         })
         .then( (data) => {
-            console.log(data);
-            navigation.navigate("Login");
+            if (data !== undefined) navigation.navigate("Login");
         })
         .catch( (message) => { console.log("ERROR " + message); });
     }
@@ -92,6 +90,13 @@ const SignUp = ({navigation}) => {
                 icon="arrow-right"
                 onPress={ () => attemptSignUp() }>
                 Sign Up</Button>
+
+                <Button
+                mode="text"
+                icon="arrow-right"
+                color="white"
+                onPress={ () => navigation.navigate("Login") }>
+                Already have an account?</Button>
             </ImageBackground>
         );
     }

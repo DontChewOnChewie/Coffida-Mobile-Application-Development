@@ -4,7 +4,7 @@ import { Text, Button, Paragraph, Subheading } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 
-const Logout = (props) => {
+const Logout = ({navigation}) => {
 
     const try_logout = async () => {
         try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
@@ -19,7 +19,7 @@ const Logout = (props) => {
         .then( (res) => {
            if (res.status == 200) {
                AsyncStoreHelper.remove_credentials();
-               console.log("Logout Successful");
+               navigation.navigate("Login");
                return;
            }
            else console.log("Something went wrong with the status.");

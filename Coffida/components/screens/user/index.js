@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, ToastAndroid } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import styles from './styles'
-import NavBar from '../../navbar';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 
 const User = (props) => {

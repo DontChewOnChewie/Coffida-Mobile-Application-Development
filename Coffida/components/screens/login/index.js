@@ -21,14 +21,13 @@ const Login = ({navigation}) => {
             })
         })
         .then( (res) => {
-           if (res.status == 200) {
-               return res.json();
-           }
-           else console.log("Something went wrong with the status.");
+           if (res.status == 200) return res.json();
         })
         .then( (data) => {
-            AsyncStoreHelper.store_credentials(data);
-            navigation.navigate("Home");
+            if (data !== undefined) {
+                AsyncStoreHelper.store_credentials(data);
+                navigation.navigate("Home");
+            }
         })
         .catch( (message) => { console.log("ERROR " + message); });
     };
@@ -61,6 +60,13 @@ const Login = ({navigation}) => {
                 style={styles.loginButton}
                 onPress={ () => try_login() }
                 >Log In</Button>
+
+                <Button
+                mode="text"
+                icon="arrow-right"
+                color="white"
+                onPress={ () => navigation.navigate("SignUp") }>
+                Dont have an account?</Button>
 
             </ImageBackground>
     );

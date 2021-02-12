@@ -1,12 +1,9 @@
 import React, {useState, useEffect } from 'react';
 import {View, FlatList } from 'react-native';
 import { TextInput, Text } from 'react-native-paper';
-import NavBar from '../../navbar'
-import styles from './styles'
+import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
-import Location from '../location';
-import { Ionicons } from '@expo/vector-icons';
 
 const Home = ({navigation}) => {
     const [loading, setLoading] = useState(true);
@@ -45,7 +42,6 @@ const Home = ({navigation}) => {
         return (
             <View style={styles.container}>
                 <Text>Loading</Text>
-                <NavBar></NavBar>
             </View>
         ); 
     } else {
@@ -64,8 +60,6 @@ const Home = ({navigation}) => {
                 renderItem={({ item }) => ( 
                 <LocationObject location={item} navButton={true} navigation={navigation}/>
                  )}/>
-
-                {/* <NavBar></NavBar> */}
             </View>
         ); 
     }
