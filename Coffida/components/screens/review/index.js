@@ -3,6 +3,8 @@ import { View, ToastAndroid } from 'react-native';
 import { Button, TextInput, Title } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
+import ErrorPopUp from '../../ErrorPopUp';
+import {ReviewValidation} from '../../InputHandler';
 
 const Review = ({navigation, route}) => {
     const [priceRating, setPriceRating] = useState('');
@@ -10,10 +12,18 @@ const Review = ({navigation, route}) => {
     const [clenlisnessRating, setClenlisnessRating] = useState('');
     const [reviewBody, setReviewBody] = useState('');
     const [review, setReview] = useState(undefined);
-    const [cameraScreen, setCameraScreen] = useState(false);
+    const [error, setError] = useState(null);
     const {location_id, previous_review} = route.params;
 
+    const validate_review = () => {
+        const isValid = ReviewValidation(priceRating, qualityRating, clenlisnessRating, reviewBody);
+        typeof(isValid) !== "boolean" ? setError(isValid) : setError(null);
+        return typeof(isValid) !== "boolean" ? false : true;
+    }
+    
     const submitReview = async () => {
+        if (!validate_review()) return;
+
         try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
         catch (error) { return; /* Catch for if no token stored. */ }
 
@@ -41,6 +51,8 @@ const Review = ({navigation, route}) => {
     }
 
     const update_review = async () => {
+        if (!validate_review()) return;
+
         try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
         catch (error) { return; /* Catch for if no token stored. */ }
 
@@ -79,6 +91,11 @@ const Review = ({navigation, route}) => {
 
     return (
         <View style={styles.container}>
+
+            {error !== null ?
+            <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
+            : null}
+
             <Title>Leave a Review</Title>
 
             <TextInput
@@ -133,7 +150,7 @@ const Review = ({navigation, route}) => {
                 style={styles.button}
                 mode="contained"
                 icon="camera"
-                onPress={() => setCameraScreen(prevCameraScreen => !prevCameraScreen)}>
+                onPress={() => navigation.navigate("Camera")}>
                 Add a Picture</Button>
             </View>
                 

@@ -1,14 +1,15 @@
 import React, {useState, useEffect } from 'react';
-import {View, FlatList } from 'react-native';
+import {View, FlatList, StatusBar} from 'react-native';
 import { TextInput, Text } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
 
 const Home = ({navigation}) => {
+    const [hasNotch, setHasNotch] = useState(0);
     const [loading, setLoading] = useState(true);
     const [locations, setLocations] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
+
 
     useEffect( () => {
         const get_shop_data = async () => {
@@ -36,6 +37,8 @@ const Home = ({navigation}) => {
         }
 
         get_shop_data();
+
+        setHasNotch(StatusBar.currentHeight);
     }, []);
 
     if (loading) {
@@ -46,13 +49,7 @@ const Home = ({navigation}) => {
         ); 
     } else {
         return (
-            <View style={styles.container}>
-                <TextInput
-                mode="outlined"
-                style={styles.searchBar}
-                placeholder="Search Query..."
-                onChangeText={text => setSearchQuery(text)}
-                />
+            <View style={[styles.container, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
                 <FlatList
                 style={styles.list}
                 data={locations}

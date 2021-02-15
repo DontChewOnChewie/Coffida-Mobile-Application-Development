@@ -13,6 +13,7 @@ import Location from './components/screens/location';
 import Review from './components/screens/review';
 import Logout from './components/screens/logout';
 import User from './components/screens/user';
+import CameraView from './components/screens/camera'; 
 
 LogBox.ignoreAllLogs(true);
 const IntialStack = createStackNavigator();
@@ -25,6 +26,7 @@ const HomeScreenStack = () => {
       <HomeStack.Screen name="Home" component={Home} options={{headerShown: false}}/>
       <HomeStack.Screen name="Location" component={Location}/>
       <HomeStack.Screen name="Review" component={Review}/>
+      <HomeStack.Screen name="Camera" component={CameraView}/>
     </HomeStack.Navigator>
   );
 }

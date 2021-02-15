@@ -3,12 +3,17 @@ import { View, ToastAndroid } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import styles from './styles'
 import AsyncStoreHelper from '../../AsyncStoreHelper';
+import ErrorPopUp from '../../ErrorPopUp';
+import {UserValidation} from '../../InputHandler';
 
 const User = (props) => {
     const [firstName, setFirstName] = useState("");
     const [secondName, setSecondName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPasswrd] = useState("");
+
+    const [error, setError] = useState(null);
 
     const get_user_details = async () => {
         try { var {token, id } =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
@@ -36,6 +41,12 @@ const User = (props) => {
         .catch( (message) => { console.log("ERROR " + message); });
     }
 
+    const validate_changes = () => {
+        const isValid = UserValidation(firstName, secondName, email, password, confirmPassword);
+        typeof(isValid) !== "boolean" ? setError(isValid) : setError(null);
+        return typeof(isValid) !== "boolean" ? false : true;
+    }
+
     const get_user_detail_changes_object = () => {
         const return_object = {}
         if (firstName !== "") return_object.first_name = firstName;
@@ -46,6 +57,8 @@ const User = (props) => {
     }
 
     const change_user_details = async() => {
+        if (!validate_changes()) return;
+
         const user_changes = get_user_detail_changes_object();
         try { var {token, id} =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
         catch (error) { return; /* Catch for if no token stored. */ }
@@ -74,6 +87,10 @@ const User = (props) => {
 
     return (
         <View style={styles.container}>
+
+            { error !== null ?
+                <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
+            : null}
 
             <Text style={styles.title}>{firstName} {secondName}'s Page</Text>
 
@@ -105,6 +122,14 @@ const User = (props) => {
             value={password}
             placeholder={"Password..."}
             secureTextEntry={true}/>    
+
+            <TextInput
+            mode="outlined"
+            style={styles.input}
+            onChangeText={ text => setConfirmPasswrd(text) }
+            value={confirmPassword}
+            placeholder={"Confirm Password..."}
+            secureTextEntry={true}/>   
 
             <Button
             style={styles.loginButton}

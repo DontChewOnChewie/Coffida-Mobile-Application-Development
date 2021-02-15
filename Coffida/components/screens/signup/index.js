@@ -4,6 +4,8 @@ import { TextInput, Text, Button } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import { useEffect } from 'react';
+import {UserValidation} from '../../InputHandler';
+import ErrorPopUp from '../../ErrorPopUp';
 
 const SignUp = ({navigation}) => {
 
@@ -11,11 +13,21 @@ const SignUp = ({navigation}) => {
     const [secondName, setSecondName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState(null);
 
     const [loading, setLoading] = useState(true);
 
+    const validateSignUp = () => {
+        const isValid = UserValidation(firstName, secondName, email, password, confirmPassword);
+        typeof(isValid) !== "boolean" ? setError(isValid) : setError(null);
+        return typeof(isValid) !== "boolean" ? false : true;
+    }
+
     const attemptSignUp = async () => {
-        fetch("http://10.0.2.2:3333/api/1.0.0/user", {
+        if (!validateSignUp()) return;
+
+        fetch("http://192.168.1.135:3333/api/1.0.0/user", {
             method : "post",
             headers: {
                 'Content-Type': "application/json"
@@ -57,6 +69,9 @@ const SignUp = ({navigation}) => {
             <ImageBackground source={require('../../../images/loginBG.jpg')}
             style={styles.container}>
 
+                { error !== null ? 
+                <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
+                : null}
                 <Text style={styles.header}>Sign Up</Text>
 
                 <TextInput
@@ -82,7 +97,14 @@ const SignUp = ({navigation}) => {
                 style={styles.input}
                 onChangeText={ text => setPassword(text) }
                 placeholder={"Password..."}
-                secureTextEntry={true}/>        
+                secureTextEntry={true}/>   
+
+                <TextInput
+                mode="outlined"
+                style={styles.input}
+                onChangeText={ text => setConfirmPassword(text) }
+                placeholder={"Confrim Password..."}
+                secureTextEntry={true}/>       
 
                 <Button
                 style={styles.loginButton}

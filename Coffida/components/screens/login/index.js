@@ -10,7 +10,7 @@ const Login = ({navigation}) => {
     const [password, setPassword] = useState("");
 
     const try_login = async () => {
-        fetch("http://10.0.2.2:3333/api/1.0.0/user/login", {
+        fetch("http://192.168.1.135:3333/api/1.0.0/user/login", {
             method : "post",
             headers: {
                 'Content-Type': "application/json"
@@ -21,6 +21,7 @@ const Login = ({navigation}) => {
             })
         })
         .then( (res) => {
+            console.log(res.status);
            if (res.status == 200) return res.json();
         })
         .then( (data) => {
