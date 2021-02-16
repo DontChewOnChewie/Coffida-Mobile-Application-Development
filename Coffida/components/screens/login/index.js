@@ -27,7 +27,7 @@ const Login = ({navigation}) => {
         .then( (data) => {
             if (data !== undefined) {
                 AsyncStoreHelper.store_credentials(data);
-                navigation.navigate("Home");
+                navigation.navigate("Home", {screen: "Home"});
             }
         })
         .catch( (message) => { console.log("ERROR " + message); });

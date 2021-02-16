@@ -14,6 +14,7 @@ import Review from './components/screens/review';
 import Logout from './components/screens/logout';
 import User from './components/screens/user';
 import CameraView from './components/screens/camera'; 
+import Search from './components/screens/search';
 
 LogBox.ignoreAllLogs(true);
 const IntialStack = createStackNavigator();
@@ -42,7 +43,9 @@ const HomeScreenTabs = () => {
               return <Ionicons name="person" size={25} color="white" />
             } else if (route.name === "Logout") {
               return <Ionicons name="log-out" size={25} color="white" />
-            }
+            } else if (route.name === "Search") {
+              return <Ionicons name="search" size={25} color="white"/>
+            } 
           },
         }
         )}
@@ -54,6 +57,7 @@ const HomeScreenTabs = () => {
         }}
       >
         <HomeTab.Screen name="Home" component={HomeScreenStack} />
+        <HomeTab.Screen name="Search" component={Search}/>
         <HomeTab.Screen name="User" component={User} />
         <HomeTab.Screen name="Logout" component={Logout} />
       </HomeTab.Navigator>

@@ -1,6 +1,6 @@
 import React, {useState, useEffect } from 'react';
 import {View, FlatList, StatusBar} from 'react-native';
-import { TextInput, Text } from 'react-native-paper';
+import { Text, ActivityIndicator } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
@@ -9,7 +9,6 @@ const Home = ({navigation}) => {
     const [hasNotch, setHasNotch] = useState(0);
     const [loading, setLoading] = useState(true);
     const [locations, setLocations] = useState([]);
-
 
     useEffect( () => {
         const get_shop_data = async () => {
@@ -44,7 +43,7 @@ const Home = ({navigation}) => {
     if (loading) {
         return (
             <View style={styles.container}>
-                <Text>Loading</Text>
+                <ActivityIndicator animating={true}/>
             </View>
         ); 
     } else {

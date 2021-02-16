@@ -4,6 +4,7 @@ import { Card, Text, Title, Paragraph, Button, Divider } from 'react-native-pape
 import styles from './styles';
 import AsyncStoreHelper from '../AsyncStoreHelper';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import RatingsBar from '../RatingsBar';
 
 const DUMMY_IMG_PATH = 'http://cdn.dummyphoto.com';
 const DEFAULT_IMG_PATH = 'http://innovate.bunzlcatering.co.uk/wp-content/uploads/2015/06/coffee-shop-1.jpg';
@@ -99,7 +100,13 @@ const LocationObject = ({location, navButton, navigation}) => {
                     icon="arrow-right"
                     >
                     Check Out</Button>
-                ): null}
+                ):
+                <View style={{width: '100%'}}>
+                    <RatingsBar title="Price Rating" icon="attach-money" rating={location.avg_price_rating}/>
+                    <RatingsBar title="Quality Rating" icon="star-rate" rating={location.avg_quality_rating}/>
+                    <RatingsBar title="Clenliness Rating" icon="cleaning-services" rating={location.avg_clenliness_rating}/>   
+                </View>          
+                }
             </Card.Actions>
             <Divider style={styles.divider}/>
         </Card>
