@@ -4,10 +4,12 @@ const styles = StyleSheet.create({
 
     container : {
         flex: 1,
+        justifyContent: 'flex-end',
     },
 
-    camera : {
-        flex: 1,
+    image : {
+        height: '100%',
+        width: '100%',
     },
 
     buttonView : {
@@ -15,7 +17,7 @@ const styles = StyleSheet.create({
     },
 
     button : {
-        width: '100%',
+        width: '50%',
         borderRadius: 0,
     }
 

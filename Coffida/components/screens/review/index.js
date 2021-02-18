@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { View, ToastAndroid } from 'react-native';
-import { Button, TextInput, Title } from 'react-native-paper';
+import { Button, TextInput, Title, Dialog, Paragraph } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
@@ -13,12 +13,39 @@ const Review = ({navigation, route}) => {
     const [reviewBody, setReviewBody] = useState('');
     const [review, setReview] = useState(undefined);
     const [error, setError] = useState(null);
+    const [imageButtonDisabled, setImageButtonDisabled] = useState(true);
+    const [reviewId, setReviewId] = useState('');
+
     const {location_id, previous_review} = route.params;
 
     const validate_review = () => {
         const isValid = ReviewValidation(priceRating, qualityRating, clenlisnessRating, reviewBody);
         typeof(isValid) !== "boolean" ? setError(isValid) : setError(null);
         return typeof(isValid) !== "boolean" ? false : true;
+    }
+
+    const get_new_review_id = async () => {
+        try { var {token, id} =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
+        catch (error) { return null; /* Catch for if no token stored. */ }
+
+        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
+            method : "get",
+            headers: {
+                'Content-Type': "application/json",
+                "X-Authorization": token
+            },
+        })
+        .then( (res) => {
+           if (res.status == 200) {
+               return res.json();
+           }
+           else console.log("Something went wrong with the status.");
+        })
+        .then( (data) => {
+            const last_review = data.reviews[data.reviews.length - 1];
+            setReviewId(last_review.review.review_id);
+        })
+        .catch( (message) => { console.log("ERROR " + message); });
     }
     
     const submitReview = async () => {
@@ -41,9 +68,11 @@ const Review = ({navigation, route}) => {
                 "review_body": reviewBody
             })
         })
-        .then( (res) => {
+        .then( async (res) => {
            if (res.status == 201) {
                ToastAndroid.showWithGravity("Review Added", ToastAndroid.SHORT, ToastAndroid.CENTER);
+               const new_review_id = await get_new_review_id();
+               setImageButtonDisabled(false);
            }
            else console.log("Something went wrong with the status.");
         })
@@ -81,6 +110,7 @@ const Review = ({navigation, route}) => {
     
     useEffect(() => {
         if (previous_review !== undefined) {
+            setReviewId(previous_review.review_id)
             setReview(previous_review);
             setPriceRating(previous_review.price_rating);
             setQualityRating(previous_review.quality_rating);
@@ -150,7 +180,8 @@ const Review = ({navigation, route}) => {
                 style={styles.button}
                 mode="contained"
                 icon="camera"
-                onPress={() => navigation.navigate("Camera")}>
+                disabled={imageButtonDisabled}
+                onPress={() => navigation.navigate("Camera", {location_id: location_id, review_id: reviewId})}>
                 Add a Picture</Button>
             </View>
                 
