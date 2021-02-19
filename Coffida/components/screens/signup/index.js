@@ -53,7 +53,7 @@ const SignUp = ({navigation}) => {
 
     const get_credentials = async () => {
         const creds = await AsyncStoreHelper.get_credentials();
-        creds !== null ? navigation.navigate("Home") : setLoading(false);
+        creds != null ? navigation.navigate("Home") : setLoading(false);
     }
 
     useEffect(() => {

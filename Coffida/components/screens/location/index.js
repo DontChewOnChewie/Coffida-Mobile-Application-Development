@@ -4,12 +4,13 @@ import { Title, Button, Subheading } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
-import ReviewObject from '../../ReviewObject'
+import ReviewObject from '../../ReviewObject';
 
 const Location = ({navigation, route}) => {
     const [location, setLocation] = useState('');
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [imageURI, setImageURI] = useState(null);
     const location_id = route.params.id;
 
     const get_location_details = async () => {
@@ -44,15 +45,17 @@ const Location = ({navigation, route}) => {
     } else {
         return (
             <View style={styles.container}>
+
                 <LocationObject 
                 location={location}
                 navButton={false}
+                image={imageURI}
                 />
 
                 <View style={styles.reiviewHeadingWrapper}>
                     <Subheading>Reviews : {reviews.length}</Subheading>
                     <Button
-                    onPress={() => navigation.navigate("Review", {location_id: location_id, previous_review: undefined})}
+                    onPress={() => navigation.navigate("Review", {location_id: location_id, previous_review: undefined, has_image: null})}
                     style={styles.leaveReviewButton}
                     mode="contained"
                     icon="arrow-right">
@@ -63,7 +66,7 @@ const Location = ({navigation, route}) => {
                 data={reviews}
                 keyExtractor={item => item.review_id.toString()}
                 renderItem={({ item }) => ( 
-                    <ReviewObject review={item} locationId={location.location_id} reviewListState={[reviews, setReviews]} navigation={navigation}/>
+                    <ReviewObject review={item} locationId={location.location_id} reviewListState={[reviews, setReviews]} navigation={navigation} setGlobalImageURI={setImageURI}/>
                 )}/>
             </View>
         ); 

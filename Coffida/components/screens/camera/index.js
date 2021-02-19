@@ -5,6 +5,7 @@ import styles from './styles';
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
+import { useEffect } from 'react/cjs/react.development';
 
 const CameraView = ({navigation, route}) => {
     const [imageURI, setImageURI] = useState(null);
@@ -22,34 +23,6 @@ const CameraView = ({navigation, route}) => {
             setImageData(data);
         }
       };
-
-      const get_image = async () => {
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
-        catch (error) { return; /* Catch for if no token stored. */ }
-
-        fetch(`http://10.0.2.2:3333/api/1.0.0/location/2/review/57/photo?t=${new Date().valueOf()}`, {
-            method : "get",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-        })
-        .then( (res) => {
-           if (res.status == 200) {
-               return res.blob();
-           }
-           else console.log("Something went wrong with the status.");
-        })
-        .then ((data) => {
-            let fs = new FileReader();
-            fs.readAsDataURL(data);
-            fs.onload = () => {
-                setImageURI(fs.result);
-            }
-            console.log(data.toString());
-        })  
-        .catch( (message) => { console.log("ERROR " + message); });
-      }
 
       const save_image = async () => {
         if (imageData == null) {
@@ -71,6 +44,7 @@ const CameraView = ({navigation, route}) => {
         .then( (res) => {
            if (res.status == 200) {
                ToastAndroid.showWithGravity("Image Added", ToastAndroid.SHORT, ToastAndroid.CENTER);
+               navigation.navigate("Home");
            }
            else console.log("Something went wrong with the status.");
         })

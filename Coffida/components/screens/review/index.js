@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import { View, ToastAndroid } from 'react-native';
+import { View, ToastAndroid, TouchableOpacity } from 'react-native';
 import { Button, TextInput, Title, Dialog, Paragraph } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
 import {ReviewValidation} from '../../InputHandler';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+const LIKE_COLOR = '#6200ee';
 
 const Review = ({navigation, route}) => {
     const [priceRating, setPriceRating] = useState('');
@@ -16,7 +19,7 @@ const Review = ({navigation, route}) => {
     const [imageButtonDisabled, setImageButtonDisabled] = useState(true);
     const [reviewId, setReviewId] = useState('');
 
-    const {location_id, previous_review} = route.params;
+    const {location_id, previous_review, has_image} = route.params;
 
     const validate_review = () => {
         const isValid = ReviewValidation(priceRating, qualityRating, clenlisnessRating, reviewBody);
@@ -107,6 +110,27 @@ const Review = ({navigation, route}) => {
         })
         .catch( (message) => { console.log("ERROR " + message); });
     }
+
+    const delete_image = async () => {
+        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
+        catch (error) { return; /* Catch for if no token stored. */ }
+
+        fetch(`http://10.0.2.2:3333/api/1.0.0/location/${location_id}/review/${review.review_id}/photo`, {
+            method : "delete",
+            headers: {
+                'Content-Type': "application/json",
+                "X-Authorization": token
+            },
+        })
+        .then( (res) => {
+           if (res.status == 200) {
+               ToastAndroid.show("Image Deleted", ToastAndroid.SHORT);
+               setImageButtonDisabled(false);
+           }
+           else console.log("Something went wrong with the status.");
+        })
+        .catch( (message) => { console.log("ERROR " + message); });
+    }
     
     useEffect(() => {
         if (previous_review !== undefined) {
@@ -116,6 +140,7 @@ const Review = ({navigation, route}) => {
             setQualityRating(previous_review.quality_rating);
             setClenlisnessRating(previous_review.clenliness_rating);
             setReviewBody(previous_review.review_body);
+            has_image == null ? setImageButtonDisabled(false) : null;
         }
     }, []);
 
@@ -184,6 +209,14 @@ const Review = ({navigation, route}) => {
                 onPress={() => navigation.navigate("Camera", {location_id: location_id, review_id: reviewId})}>
                 Add a Picture</Button>
             </View>
+
+            {has_image != null ? 
+            <TouchableOpacity 
+                onPress={() => delete_image()}
+                style={{flexDirection: 'row', marginLeft: 20, marginTop: 20}}>
+                <Icon name="trash" size={25} color={LIKE_COLOR}></Icon>
+                <Paragraph>Remove Image</Paragraph>
+            </TouchableOpacity> : null}
                 
         </View>
     );
