@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList} from 'react-native';
-import { Title, Button, Subheading } from 'react-native-paper';
+import { Title, Button, Subheading, ActivityIndicator } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
@@ -40,7 +40,9 @@ const Location = ({navigation, route}) => {
 
     if (loading) {
         return(
-            <Title>Loading...</Title>
+            <View style={styles.container}>
+                <ActivityIndicator/>
+            </View>
         );
     } else {
         return (

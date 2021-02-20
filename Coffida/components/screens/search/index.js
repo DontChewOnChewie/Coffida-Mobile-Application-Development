@@ -14,20 +14,34 @@ const Search = ({navigation}) => {
     const [queriedLocations, setQueriedLocations] = useState([]);
 
     const [searchQuery, setSearchQuery] = useState('');  
-    const [overallRatingSearch, setOverallRatingSearch] = useState(null);
-    const [overallPriceRatingSearch, setOverallPriceRatingSearch] = useState(null);
-    const [overallQualityRatingSearch, setOverallQualityRatingSearch] = useState(null);
-    const [overallClenlinessRatingSearch, setOverallClenlinessRatingSearch] = useState(null);
+    const [overallRatingSearch, setOverallRatingSearch] = useState('');
+    const [overallPriceRatingSearch, setOverallPriceRatingSearch] = useState('');
+    const [overallQualityRatingSearch, setOverallQualityRatingSearch] = useState('');
+    const [overallClenlinessRatingSearch, setOverallClenlinessRatingSearch] = useState('');
+    const [searchIn, setSearchIn] = useState(null);
 
     const [loading, setLoading] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
+
+    const create_search_address = () => {
+        let search_address = `http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}`
+        if (overallRatingSearch != '') search_address = search_address + `&overall_rating=${overallRatingSearch}`;
+        if (overallPriceRatingSearch != '') search_address = search_address + `&price_rating=${overallPriceRatingSearch}`;
+        if (overallQualityRatingSearch != '') search_address = search_address + `&quality_rating=${overallQualityRatingSearch}`;
+        if (overallClenlinessRatingSearch != '') search_address = search_address + `&clenliness_rating=${overallClenlinessRatingSearch}`;
+        if (searchIn != null) search_address = search_address + `&search_in=${searchIn}`;
+        return search_address;
+    }
 
     const do_search = async () => {
         setLoading(true);
         try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
         catch (error) { console.log("error"); return; /* Catch for if no token stored. */ }
+
+        const address = create_search_address();
+        console.log(address);
     
-        fetch(`http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}`, {
+        fetch(address, {
             method : "get",
             headers: {
                 'Content-Type': "application/json",
@@ -75,7 +89,14 @@ const Search = ({navigation}) => {
         }
 
         <SearchOptions setShowFilter={setShowFilter}/>
-        <FilterModal showFilter={[showFilter, setShowFilter]}/>
+        <FilterModal 
+        showFilter={[showFilter, setShowFilter]} 
+        overallRating={[overallRatingSearch, setOverallRatingSearch]}
+        overallPriceRating={[overallPriceRatingSearch, setOverallPriceRatingSearch]}
+        overallQualityRating = {[overallQualityRatingSearch, setOverallQualityRatingSearch]}
+        overallClenlinessRating={[overallClenlinessRatingSearch, setOverallClenlinessRatingSearch]}
+        searchIn={[searchIn, setSearchIn]}
+        />
 
       </View>
     );
