@@ -8,6 +8,8 @@ import { FlatList } from 'react-native-gesture-handler';
 import LocationObject from '../../LocationObject';
 import SearchOptions from '../../SearchOptions';
 import FilterModal from '../../FilterModal';
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
 
 const Search = ({navigation}) => {
     const [hasNotch, setHasNotch] = useState(0);
@@ -22,6 +24,8 @@ const Search = ({navigation}) => {
 
     const [loading, setLoading] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
+
+    const [userLocation, setUserLocation] = useState(null);
 
     const create_search_address = () => {
         let search_address = `http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}`
@@ -61,6 +65,54 @@ const Search = ({navigation}) => {
         .catch( (message) => { console.log("ERROR " + message); });
     }
 
+    const sort_locations_for_nearest = (locations) => {
+        const sorted_array = locations.map(location => ({
+            ...location,
+            distanceValue: (Math.abs(userLocation.coords.latitude - location.latitude)) + (Math.abs(userLocation.coords.longitude - location.longitude))
+        }));
+
+        sorted_array.sort((a,b) => { return a.distanceValue - b.distanceValue; });
+        setQueriedLocations(sorted_array);
+    }
+
+    const get_nearby_locations_fetch = async () => {
+        if (userLocation == null) return;
+
+        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
+        catch (error) { console.log("error"); return; /* Catch for if no token stored. */ }
+
+        setLoading(true);
+
+        fetch("http://10.0.2.2:3333/api/1.0.0/find", {
+            method : "get",
+            headers: {
+                'Content-Type': "application/json",
+                "X-Authorization": token
+            },
+        })
+        .then( (res) => {
+        if (res.status == 200) {
+            return res.json();
+        }
+        else console.log("Something went wrong with the status.");
+        })
+        .then( (data) => {
+            sort_locations_for_nearest(data);
+            setLoading(false);
+        })
+        .catch( (message) => { console.log("ERROR " + message); });
+    }
+
+    const get_nearby_locations = async () => {
+        const {status} = await Permissions.askAsync(Permissions.LOCATION);
+        if (status == 'granted') {
+            let location = await Location.getCurrentPositionAsync({accuracy: 5});
+            // console.log(JSON.stringify(location, null, 4));
+            setUserLocation(location);
+            get_nearby_locations_fetch();
+        }
+    }
+
     useEffect(() => {
         setHasNotch(StatusBar.currentHeight);
     }, []);
@@ -88,7 +140,7 @@ const Search = ({navigation}) => {
             )}/>
         }
 
-        <SearchOptions setShowFilter={setShowFilter}/>
+        <SearchOptions setShowFilter={setShowFilter} sortByLocationFunction={get_nearby_locations}/>
         <FilterModal 
         showFilter={[showFilter, setShowFilter]} 
         overallRating={[overallRatingSearch, setOverallRatingSearch]}

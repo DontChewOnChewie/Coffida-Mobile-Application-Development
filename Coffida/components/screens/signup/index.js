@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ImageBackground, View } from 'react-native';
-import { TextInput, Text, Button } from 'react-native-paper';
+import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import { useEffect } from 'react';
@@ -62,7 +62,9 @@ const SignUp = ({navigation}) => {
 
     if (loading) {
         return (
-            <Text>Loading</Text>
+            <View style={{alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%'}}>
+                <ActivityIndicator/>
+            </View>
         );
     } else {
         return (

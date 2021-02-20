@@ -1,11 +1,11 @@
 import React, {useState, setState} from 'react';
 import {FAB} from 'react-native-paper';
 
-const SearchOptions = ({setShowFilter}) => {
+const SearchOptions = ({setShowFilter, sortByLocationFunction}) => {
     const [state, setState] = React.useState({ open: false });
     const onStateChange = ({ open }) => setState({ open });
     const { open } = state;
-
+    
     return (
         <FAB.Group
           open={open}
@@ -14,7 +14,7 @@ const SearchOptions = ({setShowFilter}) => {
             {
               icon: 'map-marker',
               label: 'Location Search',
-              onPress: () => console.log('Pressed Location'),
+              onPress: () => sortByLocationFunction(),
             },
             {
               icon: 'filter',
