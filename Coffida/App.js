@@ -15,17 +15,28 @@ import Logout from './components/screens/logout';
 import User from './components/screens/user';
 import CameraView from './components/screens/camera'; 
 import Search from './components/screens/search';
+import UserActivity from './components/screens/userActivity';
 
 LogBox.ignoreAllLogs(true);
 const IntialStack = createStackNavigator();
 const HomeTab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
+const UserStack = createStackNavigator();
+
+const UserScreenStack = () => {
+  return (
+    <UserStack.Navigator initialRouteName="User">
+      <UserStack.Screen name="User" component={User} options={{headerShown: false}}/>
+      <UserStack.Screen name="UserActivity" component={UserActivity}/>
+    </UserStack.Navigator>
+  );
+}
 
 const HomeScreenStack = () => {
   return (
     <HomeStack.Navigator initialRouteName="Home">
       <HomeStack.Screen name="Home" component={Home} options={{headerShown: false}}/>
-      <HomeStack.Screen name="Location" component={Location}/>
+      <HomeStack.Screen name="Location" component={Location} options={{headerShown: false}}/>
       <HomeStack.Screen name="Review" component={Review}/>
       <HomeStack.Screen name="Camera" component={CameraView}/>
     </HomeStack.Navigator>
@@ -58,7 +69,7 @@ const HomeScreenTabs = () => {
       >
         <HomeTab.Screen name="Home" component={HomeScreenStack} />
         <HomeTab.Screen name="Search" component={Search}/>
-        <HomeTab.Screen name="User" component={User} />
+        <HomeTab.Screen name="User" component={UserScreenStack} />
         <HomeTab.Screen name="Logout" component={Logout} />
       </HomeTab.Navigator>
   );

@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { View, ToastAndroid } from 'react-native';
-import { Button, TextInput, Text } from 'react-native-paper';
+import { Button, TextInput, Text, FAB } from 'react-native-paper';
 import styles from './styles'
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
 import {UserValidation} from '../../InputHandler';
 
-const User = (props) => {
+
+const User = ({navigation}) => {
     const [firstName, setFirstName] = useState("");
     const [secondName, setSecondName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPasswrd] = useState("");
+
+    const [favouriteLocations, setFavouriteLocations] = useState([]);
+    const [reviewedLocations, setReviewedLocations] = useState([]);
 
     const [error, setError] = useState(null);
 
@@ -37,6 +41,8 @@ const User = (props) => {
             setFirstName(data.first_name);
             setSecondName(data.last_name);
             setEmail(data.email);
+            setFavouriteLocations(data.favourite_locations);
+            setReviewedLocations(data.reviews);
         })
         .catch( (message) => { console.log("ERROR " + message); });
     }
@@ -82,6 +88,7 @@ const User = (props) => {
     }
 
     useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {get_user_details();});
         get_user_details();
     }, []);
 
@@ -136,6 +143,13 @@ const User = (props) => {
             mode="contained"
             onPress={ () => change_user_details() }>
             Update Details</Button>
+
+            <FAB
+            style={{position:'absolute', bottom: 25, right: 25}}
+            small
+            icon="plus"
+            onPress={() => navigation.navigate("UserActivity", {favourite_locations: favouriteLocations, reviewed_locations: reviewedLocations})}
+            />
         </View>
     ); 
 

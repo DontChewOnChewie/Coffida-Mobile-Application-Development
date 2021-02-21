@@ -136,7 +136,7 @@ const Search = ({navigation}) => {
             data={queriedLocations}
             keyExtractor={ item => item.location_id.toString() }
             renderItem={({ item }) => ( 
-            <LocationObject location={item} navButton={true} navigation={navigation}/>
+            <LocationObject location={item} navButton={true} navigation={navigation} backToNavigation={["Search", {}]}/>
             )}/>
         }
 

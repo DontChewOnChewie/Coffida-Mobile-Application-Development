@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList} from 'react-native';
-import { Title, Button, Subheading, ActivityIndicator } from 'react-native-paper';
+import { View, FlatList, StatusBar } from 'react-native';
+import { Title, Button, Subheading, ActivityIndicator, FAB } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
@@ -11,7 +11,9 @@ const Location = ({navigation, route}) => {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [imageURI, setImageURI] = useState(null);
+    const [hasNotch, setHasNotch] = useState(0);
     const location_id = route.params.id;
+    const back_button_arguments = route.params.backToNavigation;
 
     const get_location_details = async () => {
         await fetch(`http://10.0.2.2:3333/api/1.0.0/location/${location_id}`, {
@@ -35,7 +37,9 @@ const Location = ({navigation, route}) => {
     } 
 
     useEffect( () => {
+        const unsubscribe = navigation.addListener('focus', () => {get_location_details();});
         get_location_details();
+        setHasNotch(StatusBar.currentHeight);
     }, []);
 
     if (loading) {
@@ -46,12 +50,13 @@ const Location = ({navigation, route}) => {
         );
     } else {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
 
                 <LocationObject 
                 location={location}
                 navButton={false}
                 image={imageURI}
+                userFavourited={location.user_favourited}
                 />
 
                 <View style={styles.reiviewHeadingWrapper}>
@@ -70,6 +75,14 @@ const Location = ({navigation, route}) => {
                 renderItem={({ item }) => ( 
                     <ReviewObject review={item} locationId={location.location_id} reviewListState={[reviews, setReviews]} navigation={navigation} setGlobalImageURI={setImageURI}/>
                 )}/>
+
+                <FAB
+                style={{position:'absolute', top: hasNotch > 24 ? hasNotch + 20 : 20, right: 25, backgroundColor: '#6200ee'}}
+                small
+                icon="arrow-left"
+                onPress={() => navigation.navigate(back_button_arguments[0], back_button_arguments[1])}
+                />
+
             </View>
         ); 
     }

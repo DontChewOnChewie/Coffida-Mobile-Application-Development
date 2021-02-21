@@ -36,8 +36,10 @@ const Home = ({navigation}) => {
         }
 
         get_shop_data();
-
         setHasNotch(StatusBar.currentHeight);
+        const unsubscribe = navigation.addListener('focus', () => {
+            get_shop_data();
+        });
     }, []);
 
     if (loading) {
@@ -54,7 +56,7 @@ const Home = ({navigation}) => {
                 data={locations}
                 keyExtractor={ item => item.location_id.toString() }
                 renderItem={({ item }) => ( 
-                <LocationObject location={item} navButton={true} navigation={navigation}/>
+                <LocationObject location={item} navButton={true} navigation={navigation} backToNavigation={["Home", {}]}/>
                  )}/>
             </View>
         ); 
