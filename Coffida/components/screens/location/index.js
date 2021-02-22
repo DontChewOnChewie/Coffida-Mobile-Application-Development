@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StatusBar } from 'react-native';
 import { Title, Button, Subheading, ActivityIndicator, FAB } from 'react-native-paper';
-import styles from './styles';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
 import ReviewObject from '../../ReviewObject';
@@ -47,13 +47,13 @@ const Location = ({navigation, route}) => {
             <View
             accessbile={true}
             accessibilityLabel="Loading page." 
-            style={styles.container}>
+            style={[styles.size100, styles.whiteBackground]}>
                 <ActivityIndicator/>
             </View>
         );
     } else {
         return (
-            <View style={[styles.container, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
+            <View style={[styles.containerNoFlex,, styles.whiteBackground, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
 
                 <LocationObject 
                 location={location}
@@ -71,7 +71,7 @@ const Location = ({navigation, route}) => {
                     <Button
                     accessibilityHint="Navigate to create new review page."
                     onPress={() => navigation.navigate("Review", {location_id: location_id, previous_review: undefined, has_image: null})}
-                    style={styles.leaveReviewButton}
+                    style={styles.button40}
                     mode="contained"
                     icon="arrow-right">
                     Leave Review</Button>
@@ -91,7 +91,7 @@ const Location = ({navigation, route}) => {
                 accessible={true}
                 accessibilityRole="button"
                 accessibilityHint="Go back to previous page."
-                style={{position:'absolute', top: hasNotch > 24 ? hasNotch + 20 : 20, right: 25, backgroundColor: '#6200ee'}}
+                style={[styles.locationBackButton, {top: hasNotch > 24 ? hasNotch + 20 : 20}]}
                 small
                 icon="arrow-left"
                 onPress={() => navigation.navigate(back_button_arguments[0], back_button_arguments[1])}

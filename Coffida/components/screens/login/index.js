@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { ImageBackground } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
-import styles from './styles';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import Background from './../../../images/loginBG.jpg';
 import ErrorPopUp from '../../ErrorPopUp';
@@ -48,18 +48,18 @@ const Login = ({navigation}) => {
                 <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
                 : null}
 
-                <Text style={styles.header}>Sign In</Text>
+                <Text style={styles.formTitle}>Sign In</Text>
 
                 <TextInput
                 accessibilityLabel="Account email."
                 label="Account Email"
-                style={styles.input}
+                style={styles.input60}
                 onChangeText={ text => setEmail(text) }/>
 
                 <TextInput
                 accessibilityLabel="Account password."
                 label="Account Password"
-                style={styles.input}
+                style={styles.input60}
                 onChangeText={ text => setPassword(text) }
                 secureTextEntry={true}/>
 
@@ -67,7 +67,7 @@ const Login = ({navigation}) => {
                 accessibilityHint="Try signing into account with given credentials."
                 mode="contained"
                 icon="arrow-right"
-                style={styles.loginButton}
+                style={styles.button60}
                 onPress={ () => try_login() }
                 >Log In</Button>
 

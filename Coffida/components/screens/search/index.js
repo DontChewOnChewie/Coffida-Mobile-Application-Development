@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, StatusBar} from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from './styles'
+import styles from '../../../styles'
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import { FlatList } from 'react-native-gesture-handler';
 import LocationObject from '../../LocationObject';
@@ -118,25 +118,21 @@ const Search = ({navigation}) => {
     }, []);
 
     return (
-    <View style={[styles.container, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
+    <View style={[styles.size100, styles.whiteBackgrounde, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
 
-        <View style={styles.searchBarWrapper}>
-            <Searchbar
-                accessibilityLabel="Form input for search query."
-                style={styles.searchBar}
-                placeholder="Search"
-                onChangeText={text => setSearchQuery(text)}
-                value={searchQuery}
-                onIconPress={() => do_search()}
-            />
-        </View>
+        <Searchbar
+            accessibilityLabel="Form input for search query."
+            placeholder="Search"
+            onChangeText={text => setSearchQuery(text)}
+            value={searchQuery}
+            onIconPress={() => do_search()}
+        />
 
         {loading ? <ActivityIndicator animating={true}/> : 
             <FlatList
             accessible={true}
             accessibilityRole="scrollbar"
             accessibilityLabel="Scrollable list of filtered locations."
-            style={styles.list}
             data={queriedLocations}
             keyExtractor={ item => item.location_id.toString() }
             renderItem={({ item }) => ( 

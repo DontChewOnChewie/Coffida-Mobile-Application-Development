@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react';
 import {View, FlatList, StatusBar} from 'react-native';
 import { Text, ActivityIndicator } from 'react-native-paper';
-import styles from './styles';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
 
@@ -49,18 +49,18 @@ const Home = ({navigation}) => {
             <View
             accessible={true}
             accessibilityLabel="Page loading." 
-            style={styles.container}>
+            style={[styles.container, styles.whiteBackground]}>
                 <ActivityIndicator animating={true}/>
             </View>
         ); 
     } else {
         return (
-            <View style={[styles.container, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
+            <View style={[styles.container, styles.whiteBackground, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
                 <FlatList
                 accessible={true}
                 accessibilityRole="scrollbar"
                 accessibilityLabel="Scrollable list of locations."
-                style={styles.list}
+                style={styles.size100}
                 data={locations}
                 keyExtractor={ item => item.location_id.toString() }
                 renderItem={({ item }) => ( 

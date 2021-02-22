@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, ToastAndroid } from 'react-native';
 import { Text, Card, Paragraph, Divider, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from './styles';
+import styles from '../../styles';
 import AsyncStoreHelper from '../AsyncStoreHelper';
 import FilterModal from '../FilterModal';
 
@@ -136,9 +136,9 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
                 <Text>{review.review_body}</Text>
             </Card.Content>
             <Card.Actions>
-                <View style={styles.cardActions}>
-                    <View style={styles.likeButton}>
-                        <Paragraph style={styles.likeText}>{liked ? "Unlike" : "Like"}</Paragraph>
+                <View style={styles.reviewObjectActionsWrapper}>
+                    <View style={styles.likeButtonWrapper}>
+                        <Paragraph style={styles.likeButtonText}>{liked ? "Unlike" : "Like"}</Paragraph>
                         <TouchableOpacity
                         accessible={true}
                         accessibilityRole="button"
@@ -152,7 +152,7 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
                             name="thumbs-up" 
                             size={25} 
                             color={iconColour} 
-                            style={{position: 'relative', bottom: 3}}/>
+                            style={styles.likeButton}/>
                         </TouchableOpacity>
                     </View>
 
@@ -164,16 +164,16 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
             <Card.Actions
             accessible={true}
             accessibilityLabel="Container for editing your created reviews.">
-                <View style={[styles.cardActions, {justifyContent: 'flex-start'}]}>
+                <View style={styles.reviewObjectUserEditActionsWrapper}>
                     { isUsers ? (
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={styles.flexDirectionRow}>
 
                         <TouchableOpacity 
                         accessible={true}
                         accessibilityRole="button"
                         accessibilityHint={`Navigate to edit page for review ${review.review_id}.`}
                         onPress={() => navigation.navigate("Review", {location_id: locationId, previous_review: review, has_image: imageURI})}
-                        style={{flexDirection: 'row'}}>
+                        style={styles.flexDirectionRow}>
                             <Icon 
                             accessible={true}
                             accessibilityRole="image"
@@ -189,7 +189,7 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
                         accessibilityRole="button"
                         accessibilityHint={`Delete review ${review.review_id}.`}
                         onPress={() => handle_delete_review_btn_clicked()}
-                        style={{flexDirection: 'row', marginLeft: 20}}>
+                        style={styles.userControlButton}>
                             <Icon 
                             accessible={true}
                             accessibilityRole="image"
@@ -207,7 +207,7 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
                     accessibilityRole="button"
                     accessibilityHint={`View image for review ${review.review_id}.`}
                     onPress={() => setGlobalImageURI(imageURI)}
-                    style={{flexDirection: 'row', marginLeft: 20}}>
+                    style={styles.userControlButton}>
                         <Icon 
                         accessible={true}
                         accessibilityRole="image"

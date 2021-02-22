@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { View, ToastAndroid, TouchableOpacity, ImageBackground } from 'react-native';
-import { Button, TextInput, Title, Dialog, Paragraph } from 'react-native-paper';
-import styles from './styles';
+import { Button, TextInput, Title, Dialog, Paragraph, Text } from 'react-native-paper';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
 import {ReviewValidation} from '../../InputHandler';
@@ -155,12 +155,12 @@ const Review = ({navigation, route}) => {
             <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
             : null}
 
-            <Title style={{color: 'white'}}>Leave a Review</Title>
+            <Text style={styles.formTitle}>Leave a Review</Text>
 
             <TextInput
             accessibilityLabel="Form input for price rating."
             accessibilityValue={{min: 0, max: 5, now: priceRating}}
-            style={styles.input}
+            style={styles.input90}
             label="Price Rating..."
             onChangeText={text => setPriceRating(text)}
             keyboardType='number-pad'
@@ -171,7 +171,7 @@ const Review = ({navigation, route}) => {
             <TextInput
             accessibilityLabel="Form input for quality rating."
             accessibilityValue={{min: 0, max: 0, now: qualityRating}}
-            style={styles.input}
+            style={styles.input90}
             label="Quality Rating..."
             onChangeText={text => setQualityRating(text)}
             keyboardType='number-pad'
@@ -182,7 +182,7 @@ const Review = ({navigation, route}) => {
             <TextInput
             accessibilityLabel="Form input for clenliness rating."
             accessibilityValue={{min: 0, max: 0, now: clenlisnessRating}}
-            style={styles.input}
+            style={styles.input90}
             label="Clenliness Rating..."
             onChangeText={text => setClenlisnessRating(text)}
             keyboardType='number-pad'
@@ -193,7 +193,7 @@ const Review = ({navigation, route}) => {
             <TextInput
             accessibilityLabel="Form input for comments on location."
             accessibilityValue={{text: "Review body must be longer than 15 words but less than 500." }}
-            style={styles.largeInput}
+            style={styles.textarea}
             multiline={true}
             numberOfLines={7}
             label="Review Body..."
@@ -201,10 +201,10 @@ const Review = ({navigation, route}) => {
             value={reviewBody}
             />
 
-            <View style={styles.buttonLayout}>
+            <View style={styles.reviewScreenButtonWrapper}>
                 <Button
                 accessibilityHint={`This will ${review == null ? "create" : "edit"} this review.`}
-                style={styles.button}
+                style={styles.button40}
                 mode="contained"
                 icon="arrow-right"
                 onPress={() => review === undefined ? submitReview() : update_review()}>
@@ -212,7 +212,7 @@ const Review = ({navigation, route}) => {
 
                 <Button
                 accessibilityHint={`Add an image for this review, currently ${imageButtonDisabled ? "disabled" : "enabled"}.`}
-                style={styles.button}
+                style={styles.button40}
                 mode="contained"
                 icon="camera"
                 disabled={imageButtonDisabled}
@@ -226,9 +226,9 @@ const Review = ({navigation, route}) => {
                 accessibilityRole="button"
                 accessibilityHint="Delete image for this review."
                 onPress={() => delete_image()}
-                style={{flexDirection: 'row', marginLeft: 20, marginTop: 20}}>
-                <Icon name="trash" size={25} color={LIKE_COLOR}></Icon>
-                <Paragraph>Remove Image</Paragraph>
+                style={styles.deleteImageButton}>
+                <Icon name="trash" size={25} color={"#FFFFFF"}></Icon>
+                <Paragraph style={styles.boldedWhiteText}>Remove Image</Paragraph>
             </TouchableOpacity> : null}
                 
         </ImageBackground>

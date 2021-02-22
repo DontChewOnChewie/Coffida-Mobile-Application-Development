@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, Image} from 'react-native';
 import {Banner, Text, Button} from 'react-native-paper';
-import styles from './styles';
+import styles from '../../styles';
 
 const ErrorPopUp = ({errorMessage, errorStateFunction}) => {
 
@@ -16,7 +16,7 @@ const ErrorPopUp = ({errorMessage, errorStateFunction}) => {
             label: "Close",
             onPress: () => errorStateFunction(null),
         }]}>
-        <Text style={styles.errorMessage}>{errorMessage}</Text>
+        <Text style={styles.ratingTitle}>{errorMessage}</Text>
       </Banner>
     );
 

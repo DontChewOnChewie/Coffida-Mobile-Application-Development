@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { View, ToastAndroid, TouchableOpacity } from 'react-native';
 import { Card, Text, Title, Paragraph, Button, Divider } from 'react-native-paper';
-import styles from './styles';
+import styles from '../../styles';
 import AsyncStoreHelper from '../AsyncStoreHelper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import RatingsBar from '../RatingsBar';
@@ -110,7 +110,7 @@ const LocationObject = ({location, navButton, navigation, image, backToNavigatio
             accessibilityRole="image"
             accessibilityLabel={`Image of ${location.location_name} in ${location.location_town}.`}
             source={{ uri: image != null ? image : locationImage }}/>
-            <Card.Actions style={styles.cardActions}>
+            <Card.Actions style={styles.locationObjectActionsWrapper}>
                 { navButton ? (
                     <Button
                     accessibilityHint={`Navigate to ${location.location_name} in ${location.location_town} page.`}
@@ -123,7 +123,7 @@ const LocationObject = ({location, navButton, navigation, image, backToNavigatio
                 <View 
                 accessible={true}
                 accessibilityLabel={`Ratings container for ${location.location_name} in ${location.location_town}.`}
-                style={{width: '100%'}}>
+                style={styles.width100}>
                     <RatingsBar title="Price Rating" icon="attach-money" rating={location.avg_price_rating}/>
                     <RatingsBar title="Quality Rating" icon="star-rate" rating={location.avg_quality_rating}/>
                     <RatingsBar title="Clenliness Rating" icon="cleaning-services" rating={location.avg_clenliness_rating}/>   

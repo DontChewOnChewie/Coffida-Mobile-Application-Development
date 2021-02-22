@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, Image, ToastAndroid} from 'react-native';
 import {Button} from 'react-native-paper';
-import styles from './styles';
+import styles from '../../../styles';
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
@@ -51,27 +51,27 @@ const CameraView = ({navigation, route}) => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={styles.cameraContainer}>
             {imageURI !== null ? 
                 <Image
                 accessible={true}
                 accessibilityRole="image"
                 accessibilityLabel="Shows the taken image to upload for review." 
-                style={styles.image} 
+                style={styles.size100} 
                 source={{uri: imageURI}}/> 
             : null}
-            <View style={styles.buttonView}>
+            <View style={styles.flexDirectionRow}>
                 <Button
                 accessibilityHint="Load up camera app and take a picture to upload."
                 onPress={ () => take_picture() }
-                style={styles.button}
+                style={styles.button50}
                 mode="outlined"
                 icon="camera">
                 Take Picture</Button>
                 <Button
                 accessibilityHint={`Upload image to server for review.${imageURI != null ? "" : " You need to take a picture first."}`}
                 onPress={ () => save_image() }
-                style={styles.button}
+                style={styles.button50}
                 mode="outlined"
                 icon="upload">
                 Upload Picture</Button>

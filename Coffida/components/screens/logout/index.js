@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Text, Button, Paragraph, Subheading } from 'react-native-paper';
-import styles from './styles';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 
 const Logout = ({navigation}) => {
@@ -29,11 +29,11 @@ const Logout = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <Subheading style={styles.message}>If you log out you will not be able to leave reviews for any coffee shop.</Subheading>
+            <Subheading style={styles.logoutMessage}>If you log out you will not be able to leave reviews for any coffee shop.</Subheading>
 
             <Button
             accessibilityHint="Logout of your account and return to sign in page."
-            style={styles.loginButton}
+            style={styles.button60}
             mode="contained"
             icon="door-open"
             onPress={ () => try_logout() }

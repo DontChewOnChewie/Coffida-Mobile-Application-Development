@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, ToastAndroid, ImageBackground } from 'react-native';
 import { Button, TextInput, Text, FAB } from 'react-native-paper';
-import styles from './styles'
+import styles from '../../../styles'
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
 import {UserValidation} from '../../InputHandler';
@@ -103,32 +103,32 @@ const User = ({navigation}) => {
                 <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
             : null}
 
-            <Text style={styles.title}>{firstName} {secondName}'s Page</Text>
+            <Text style={styles.formTitle}>{firstName} {secondName}'s Page</Text>
 
             <TextInput
             accessibilityLabel="Form input for first name edit."
-            style={styles.input}
+            style={styles.input60}
             onChangeText={ text => setFirstName(text) }
             value={firstName}
             label="First Name"/>   
 
             <TextInput
             accessibilityLabel="Form input for second name edit."
-            style={styles.input}
+            style={styles.input60}
             onChangeText={ text => setSecondName(text) }
             value={secondName}
             label="Second Name"/>   
 
             <TextInput
             accessibilityLabel="Form input for email edit."
-            style={styles.input}
+            style={styles.input60}
             onChangeText={ text => setEmail(text) }
             value={email}
             label="Email"/>   
 
             <TextInput
             accessibilityLabel="Form input for password edit."
-            style={styles.input}
+            style={styles.input60}
             onChangeText={ text => setPassword(text) }
             value={password}
             label="Password"
@@ -136,7 +136,7 @@ const User = ({navigation}) => {
 
             <TextInput
             accessibilityLabel="Form input for confirming password edit."
-            style={styles.input}
+            style={styles.input60}
             onChangeText={ text => setConfirmPasswrd(text) }
             value={confirmPassword}
             label="Confirm Password"
@@ -144,8 +144,9 @@ const User = ({navigation}) => {
 
             <Button
             accessibilityHint="Attempt to change your details to the form inputs above."
-            style={styles.loginButton}
+            style={styles.button60}
             mode="contained"
+            icon="arrow-right"
             onPress={ () => change_user_details() }>
             Update Details</Button>
 
@@ -153,7 +154,7 @@ const User = ({navigation}) => {
             accessible={true}
             accessibilityRole="button"
             accessibilityHint="Navigate to your activity page."
-            style={{position:'absolute', bottom: 25, right: 25}}
+            style={styles.fabBottomRight}
             icon="plus"
             onPress={() => navigation.navigate("UserActivity", {favourite_locations: favouriteLocations, reviewed_locations: reviewedLocations})}
             />

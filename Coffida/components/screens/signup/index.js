@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ImageBackground, View } from 'react-native';
 import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
-import styles from './styles';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import { useEffect } from 'react';
 import {UserValidation} from '../../InputHandler';
@@ -65,7 +65,7 @@ const SignUp = ({navigation}) => {
             <View 
             accessbile={true}
             accessibilityLabel="Loading page."
-            style={{alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%'}}>
+            style={styles.container}>
                 <ActivityIndicator/>
             </View>
         );
@@ -80,30 +80,30 @@ const SignUp = ({navigation}) => {
                 { error !== null ? 
                 <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
                 : null}
-                <Text style={styles.header}>Sign Up</Text>
+                <Text style={styles.formTitle}>Sign Up</Text>
 
                 <TextInput
                 accessibilityLabel="Form input for first name."
                 label="First Name"
-                style={styles.input}
+                style={styles.input60}
                 onChangeText={ text => setFirstName(text) }/>
 
                 <TextInput
                 accessibilityLabel="Form input for second name."
                 label="Second Name"
-                style={styles.input}
+                style={styles.input60}
                 onChangeText={ text => setSecondName(text) }/>
 
                 <TextInput
                 accessibilityLabel="Form input for email address."
                 label="Email"
-                style={styles.input}
+                style={styles.input60}
                 onChangeText={ text => setEmail(text) }/>
 
                 <TextInput
                 accessibilityLabel="Form input for password."
                 label="Password"
-                style={styles.input}
+                style={styles.input60}
                 onChangeText={ text => setPassword(text) }
                 secureTextEntry={true}/>   
 
@@ -111,13 +111,13 @@ const SignUp = ({navigation}) => {
                 accessibilityLabel="Form input for confirming password."
                 accessibilityHint="Must match previous input."
                 label="Confirm Password"
-                style={styles.input}
+                style={styles.input60}
                 onChangeText={ text => setConfirmPassword(text) }
                 secureTextEntry={true}/>       
 
                 <Button
                 accessibilityHint="Try signing up with inputted credentials."
-                style={styles.loginButton}
+                style={styles.button60}
                 mode="contained"
                 icon="arrow-right"
                 onPress={ () => attemptSignUp() }>
