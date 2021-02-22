@@ -7,12 +7,16 @@ const ErrorPopUp = ({errorMessage, errorStateFunction}) => {
 
     return (
       <Banner style={styles.bannerContainer}
+        accessible={true}
+        accessibilityRole="alert"
+        accessibilityLabel="Error Banner"
+        accessibilityHint={`Error with form inputs is ${errorMessage}`}
         visible={true}
         actions={[{
             label: "Close",
             onPress: () => errorStateFunction(null),
         }]}>
-        {errorMessage}
+        <Text style={styles.errorMessage}>{errorMessage}</Text>
       </Banner>
     );
 

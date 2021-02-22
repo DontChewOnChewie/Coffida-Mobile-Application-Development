@@ -32,6 +32,7 @@ const Logout = ({navigation}) => {
             <Subheading style={styles.message}>If you log out you will not be able to leave reviews for any coffee shop.</Subheading>
 
             <Button
+            accessibilityHint="Logout of your account and return to sign in page."
             style={styles.loginButton}
             mode="contained"
             icon="door-open"

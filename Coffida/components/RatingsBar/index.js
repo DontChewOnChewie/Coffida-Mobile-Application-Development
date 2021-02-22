@@ -14,9 +14,18 @@ const RatingsBar = ({title, icon, rating}) => {
     }, []);
 
     return (
-        <View style={styles.ratingContainer}>
+        <View 
+        accessible={true}
+        accessibilityLabel={`Overall ${title} is ${rating}.`}
+        style={styles.ratingContainer}>
             <Text style={styles.ratingTitle}>{title}</Text>
-            <MaterialIcons name={icon} size={20} color='#6200ee'/>
+            <MaterialIcons
+            accessible={true}
+            accessibilityRole="image"
+            accessibilityLabel={`Icon for ${title}.`} 
+            name={icon} 
+            size={20} 
+            color='#6200ee'/>
 
             { (rating >= 0) ? <View style={[styles.ratingCube, {backgroundColor: colour}]}></View>: null}
             { (rating >= 1) ? <View style={[styles.ratingCube, {backgroundColor: colour}]}></View>: null}

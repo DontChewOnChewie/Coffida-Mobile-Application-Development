@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { View, ToastAndroid, TouchableOpacity } from 'react-native';
+import { View, ToastAndroid, TouchableOpacity, ImageBackground } from 'react-native';
 import { Button, TextInput, Title, Dialog, Paragraph } from 'react-native-paper';
 import styles from './styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
@@ -145,18 +145,23 @@ const Review = ({navigation, route}) => {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <ImageBackground 
+        accessible={true}
+        accessibilityLabel="Background image of coffee on table."
+        source={require('../../../images/loginBG.jpg')}
+        style={styles.container}>
 
             {error !== null ?
             <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
             : null}
 
-            <Title>Leave a Review</Title>
+            <Title style={{color: 'white'}}>Leave a Review</Title>
 
             <TextInput
+            accessibilityLabel="Form input for price rating."
+            accessibilityValue={{min: 0, max: 5, now: priceRating}}
             style={styles.input}
-            mode="outlined"
-            placeholder="Price Rating..."
+            label="Price Rating..."
             onChangeText={text => setPriceRating(text)}
             keyboardType='number-pad'
             maxLength={1}
@@ -164,9 +169,10 @@ const Review = ({navigation, route}) => {
             />
 
             <TextInput
+            accessibilityLabel="Form input for quality rating."
+            accessibilityValue={{min: 0, max: 0, now: qualityRating}}
             style={styles.input}
-            mode="outlined"
-            placeholder="Quality Rating..."
+            label="Quality Rating..."
             onChangeText={text => setQualityRating(text)}
             keyboardType='number-pad'
             maxLength={1}
@@ -174,9 +180,10 @@ const Review = ({navigation, route}) => {
             />
 
             <TextInput
+            accessibilityLabel="Form input for clenliness rating."
+            accessibilityValue={{min: 0, max: 0, now: clenlisnessRating}}
             style={styles.input}
-            mode="outlined"
-            placeholder="Clenliness Rating..."
+            label="Clenliness Rating..."
             onChangeText={text => setClenlisnessRating(text)}
             keyboardType='number-pad'
             maxLength={1}
@@ -184,17 +191,19 @@ const Review = ({navigation, route}) => {
             />
 
             <TextInput
+            accessibilityLabel="Form input for comments on location."
+            accessibilityValue={{text: "Review body must be longer than 15 words but less than 500." }}
             style={styles.largeInput}
-            mode="outlined"
             multiline={true}
             numberOfLines={7}
-            placeholder="Review Comment..."
+            label="Review Body..."
             onChangeText={text => setReviewBody(text)}
             value={reviewBody}
             />
 
             <View style={styles.buttonLayout}>
                 <Button
+                accessibilityHint={`This will ${review == null ? "create" : "edit"} this review.`}
                 style={styles.button}
                 mode="contained"
                 icon="arrow-right"
@@ -202,6 +211,7 @@ const Review = ({navigation, route}) => {
                 {review === undefined ? "Submit Review" : "Update Review"}</Button>
 
                 <Button
+                accessibilityHint={`Add an image for this review, currently ${imageButtonDisabled ? "disabled" : "enabled"}.`}
                 style={styles.button}
                 mode="contained"
                 icon="camera"
@@ -212,13 +222,16 @@ const Review = ({navigation, route}) => {
 
             {has_image != null ? 
             <TouchableOpacity 
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityHint="Delete image for this review."
                 onPress={() => delete_image()}
                 style={{flexDirection: 'row', marginLeft: 20, marginTop: 20}}>
                 <Icon name="trash" size={25} color={LIKE_COLOR}></Icon>
                 <Paragraph>Remove Image</Paragraph>
             </TouchableOpacity> : null}
                 
-        </View>
+        </ImageBackground>
     );
 }
 

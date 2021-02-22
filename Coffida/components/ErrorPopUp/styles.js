@@ -10,6 +10,12 @@ const styles = StyleSheet.create({
         backgroundColor:'#dd505055',
         borderWidth: 2,
         marginBottom: 10,
+    },
+
+    errorMessage : {
+        color: 'white',
+        fontSize: 14,
+        textAlign: 'center',
     }
 
 });

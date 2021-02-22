@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
 
     input : {
         width: '50%',
-        height: 40,
+        height: 60,
         marginBottom: 10,
         marginLeft: 10
     },

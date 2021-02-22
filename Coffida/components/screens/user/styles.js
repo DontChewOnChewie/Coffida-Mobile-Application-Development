@@ -12,11 +12,12 @@ const styles = StyleSheet.create({
     title : {
         fontSize: 40,
         marginBottom: 20,
+        color: 'white'
     },
 
     input : {
         width: '60%',
-        height: 40,
+        height: 60,
         marginBottom: 10,
     },
 

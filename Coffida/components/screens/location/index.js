@@ -44,7 +44,10 @@ const Location = ({navigation, route}) => {
 
     if (loading) {
         return(
-            <View style={styles.container}>
+            <View
+            accessbile={true}
+            accessibilityLabel="Loading page." 
+            style={styles.container}>
                 <ActivityIndicator/>
             </View>
         );
@@ -59,9 +62,14 @@ const Location = ({navigation, route}) => {
                 userFavourited={location.user_favourited}
                 />
 
-                <View style={styles.reiviewHeadingWrapper}>
+                <View
+                accessible={true}
+                accessibilityRole="header"
+                accessibilityLabel="Header for reviews." 
+                style={styles.reiviewHeadingWrapper}>
                     <Subheading>Reviews : {reviews.length}</Subheading>
                     <Button
+                    accessibilityHint="Navigate to create new review page."
                     onPress={() => navigation.navigate("Review", {location_id: location_id, previous_review: undefined, has_image: null})}
                     style={styles.leaveReviewButton}
                     mode="contained"
@@ -70,6 +78,9 @@ const Location = ({navigation, route}) => {
                 </View>
 
                 <FlatList
+                accesible={true}
+                accessibilityRole="scrollbar"
+                accessibilityLabel={`Scrollable list of reviews for ${location.location_name} in ${location.location_town}.`}
                 data={reviews}
                 keyExtractor={item => item.review_id.toString()}
                 renderItem={({ item }) => ( 
@@ -77,6 +88,9 @@ const Location = ({navigation, route}) => {
                 )}/>
 
                 <FAB
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityHint="Go back to previous page."
                 style={{position:'absolute', top: hasNotch > 24 ? hasNotch + 20 : 20, right: 25, backgroundColor: '#6200ee'}}
                 small
                 icon="arrow-left"

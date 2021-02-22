@@ -127,8 +127,12 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
     }, []);
 
     return (
-        <Card>
-            <Card.Content>
+        <Card
+        accessible={true}
+        accessibilityLabel={`Container for review ${review.review_id}.`}>
+            <Card.Content
+            accessible={true}
+            accessibilityLabel={`Review ${review.review_id} says ${review.review_body}.`}>
                 <Text>{review.review_body}</Text>
             </Card.Content>
             <Card.Actions>
@@ -136,9 +140,19 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
                     <View style={styles.likeButton}>
                         <Paragraph style={styles.likeText}>{liked ? "Unlike" : "Like"}</Paragraph>
                         <TouchableOpacity
+                        accessible={true}
+                        accessibilityRole="button"
+                        accessibilityHint={`${liked ? "Unlike" : "Like"} this review.`}
                         onPress={() => handle_like_btn_click()}>
                             {/* Style added to align fully. */}
-                            <Icon name="thumbs-up" size={25} color={iconColour} style={{position: 'relative', bottom: 3}}/>
+                            <Icon 
+                            accessible={true}
+                            accessibilityRole="image"
+                            accessibilityLabel={`Thumbs up image represeting if a review is liked. You currently ${liked ? "like" : "don't like"} this review.`}
+                            name="thumbs-up" 
+                            size={25} 
+                            color={iconColour} 
+                            style={{position: 'relative', bottom: 3}}/>
                         </TouchableOpacity>
                     </View>
 
@@ -147,28 +161,60 @@ const ReviewObject = ({review, locationId, reviewListState, navigation, setGloba
 
             </Card.Actions>
 
-            <Card.Actions>
+            <Card.Actions
+            accessible={true}
+            accessibilityLabel="Container for editing your created reviews.">
                 <View style={[styles.cardActions, {justifyContent: 'flex-start'}]}>
                     { isUsers ? (
                     <View style={{flexDirection: 'row'}}>
+
                         <TouchableOpacity 
+                        accessible={true}
+                        accessibilityRole="button"
+                        accessibilityHint={`Navigate to edit page for review ${review.review_id}.`}
                         onPress={() => navigation.navigate("Review", {location_id: locationId, previous_review: review, has_image: imageURI})}
                         style={{flexDirection: 'row'}}>
-                            <Icon name="edit" size={25} color={LIKE_COLOR}></Icon>
+                            <Icon 
+                            accessible={true}
+                            accessibilityRole="image"
+                            accessibilityLabel={`Icon to edit review ${review.review_id} button.`}
+                            name="edit" 
+                            size={25} 
+                            color={LIKE_COLOR}/>
                             <Paragraph>Edit</Paragraph>
                         </TouchableOpacity>
+
                         <TouchableOpacity 
+                        accessible={true}
+                        accessibilityRole="button"
+                        accessibilityHint={`Delete review ${review.review_id}.`}
                         onPress={() => handle_delete_review_btn_clicked()}
                         style={{flexDirection: 'row', marginLeft: 20}}>
-                            <Icon name="trash" size={25} color={'#dd5050'}></Icon>
+                            <Icon 
+                            accessible={true}
+                            accessibilityRole="image"
+                            accessibilityLabel={`Icon for deleting review ${review.review_id} button.`}
+                            name="trash" 
+                            size={25} 
+                            color={'#dd5050'}/>
                             <Paragraph>Delete</Paragraph>
                         </TouchableOpacity>
+
                     </View>): null}
                     { imageURI != null ? (
                     <TouchableOpacity 
+                    accessible={true}
+                    accessibilityRole="button"
+                    accessibilityHint={`View image for review ${review.review_id}.`}
                     onPress={() => setGlobalImageURI(imageURI)}
                     style={{flexDirection: 'row', marginLeft: 20}}>
-                        <Icon name="image" size={25} color={LIKE_COLOR}></Icon>
+                        <Icon 
+                        accessible={true}
+                        accessibilityRole="image"
+                        accessibilityLabel={`Icon for showing review ${review.review_id} button.`}
+                        name="image" 
+                        size={25} 
+                        color={LIKE_COLOR}/>
                         <Paragraph>View Image</Paragraph>
                     </TouchableOpacity>)
                     : null}

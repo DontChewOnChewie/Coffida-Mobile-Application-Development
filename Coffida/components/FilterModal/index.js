@@ -12,13 +12,20 @@ const FilterModal = ({showFilter, overallRating, overallPriceRating, overallQual
   }
 
     return (
-        <Modal visible={showFilter[0]} onDismiss={() => showFilter[1](prevShowFilter => !prevShowFilter)} contentContainerStyle={{alignItems:'center', justifyContent:'center'}}>
+        <Modal 
+        accessible={true}
+        accessibilityElementsHidden={!showFilter[0]}
+        visible={showFilter[0]} 
+        onDismiss={() => showFilter[1](prevShowFilter => !prevShowFilter)} 
+        contentContainerStyle={{alignItems:'center', justifyContent:'center'}}>
+
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Overall Rating</Text>
               <TextInput
+                accessibilityLabel="Form input for minimum overall rating."
+                accessibilityValue={{min: 0, max: 0, now: overallRating[0]}}
                 style={styles.input}
-                mode="outlined"
-                placeholder="Overall Rating..."
+                label="Overall Rating..."
                 onChangeText={text => overallRating[1](text)}
                 keyboardType='number-pad'
                 maxLength={1}
@@ -29,9 +36,10 @@ const FilterModal = ({showFilter, overallRating, overallPriceRating, overallQual
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Price Rating</Text>
                 <TextInput
+                  accessibilityLabel="Form input for minimum price rating."
+                  accessibilityValue={{min: 0, max: 0, now: overallPriceRating[0]}}
                   style={styles.input}
-                  mode="outlined"
-                  placeholder="Price Rating..."
+                  label="Price Rating..."
                   onChangeText={text => overallPriceRating[1](text)}
                   keyboardType='number-pad'
                   maxLength={1}
@@ -42,9 +50,10 @@ const FilterModal = ({showFilter, overallRating, overallPriceRating, overallQual
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Quality Rating</Text>
                 <TextInput
+                  accessibilityLabel="Form input for minimum quality rating."
+                  accessibilityValue={{min: 0, max: 0, now: overallQualityRating[0]}}
                   style={styles.input}
-                  mode="outlined"
-                  placeholder="Quality Rating..."
+                  label="Quality Rating..."
                   onChangeText={text => overallQualityRating[1](text)}
                   keyboardType='number-pad'
                   maxLength={1}
@@ -55,9 +64,10 @@ const FilterModal = ({showFilter, overallRating, overallPriceRating, overallQual
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Clenliness Rating</Text>
                 <TextInput
+                  accessibilityLabel="Form input for minimum clenliness rating."
+                  accessibilityValue={{min: 0, max: 0, now: overallClenlinessRating[0]}}
                   style={styles.input}
-                  mode="outlined"
-                  placeholder="Clenliness Rating..."
+                  label="Clenliness Rating..."
                   onChangeText={text => overallClenlinessRating[1](text)}
                   keyboardType='number-pad'
                   maxLength={1}
@@ -66,15 +76,29 @@ const FilterModal = ({showFilter, overallRating, overallPriceRating, overallQual
               </View>
 
               <View style={styles.inputContainer}>
-                <RadioButton.Group onValueChange={newValue => handle_drop_down_change(newValue)} value={dropDownValue}>
+                <RadioButton.Group
+                accessibilityRole="radiogroup" 
+                onValueChange={newValue => handle_drop_down_change(newValue)} 
+                value={dropDownValue}>
+
                   <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                     <Text style={{color: 'white'}}>Search in Favourites</Text>
-                    <RadioButton value="favourite" />
+                    <RadioButton 
+                    accessible={true}
+                    accessibilityRole="radio "
+                    accessiblityHint="Toggle fitler to search in favoruties radio button."
+                    value="favourite" />
                   </View>
+
                   <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                     <Text style={{color: 'white'}}>Search in Reviewed</Text>
-                    <RadioButton value="reviewed" />
+                    <RadioButton
+                    accessible={true}
+                    accessibilityRole="radio "
+                    accessiblityHint="Toggle filter to search in reviewed radio button." 
+                    value="reviewed" />
                   </View>
+
                 </RadioButton.Group>
               </View>
         </Modal>

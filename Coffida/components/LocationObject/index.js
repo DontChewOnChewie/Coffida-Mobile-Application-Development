@@ -8,12 +8,13 @@ import RatingsBar from '../RatingsBar';
 
 const DUMMY_IMG_PATH = 'http://cdn.dummyphoto.com';
 const DEFAULT_IMG_PATH = 'http://innovate.bunzlcatering.co.uk/wp-content/uploads/2015/06/coffee-shop-1.jpg';
+const FAVOURITE_ICON = "star";
+const UNFAVOURITE_ICON = "star-o";
 const FAVOURITE_COLOUR = '#6200ee';
-const UNFAVOURITE_COLOR = '#b1b1b1';
 
 const LocationObject = ({location, navButton, navigation, image, backToNavigation}) => {
     const [favourite, setFavourite] = useState(false);
-    const [iconColour, setIconColour] = useState(UNFAVOURITE_COLOR);
+    const [favouriteIcon, setFavouriteIcon] = useState(UNFAVOURITE_ICON);
     const [locationImage, setLocationImage] = useState('');
 
     const set_user_has_favourite = async () => {
@@ -37,7 +38,7 @@ const LocationObject = ({location, navButton, navigation, image, backToNavigatio
         .then( (data) => {
             const faves = data.favourite_locations;
             const is_favourite = (faves.filter(fave => fave.location_id === location.location_id).length) > 0;
-            is_favourite ? setIconColour(FAVOURITE_COLOUR) : setIconColour(UNFAVOURITE_COLOR);
+            is_favourite ? setFavouriteIcon(FAVOURITE_ICON) : setFavouriteIcon(UNFAVOURITE_ICON);
             setFavourite(is_favourite);
         })
         .catch( (message) => { console.log("ERROR " + message); });
@@ -57,7 +58,7 @@ const LocationObject = ({location, navButton, navigation, image, backToNavigatio
         .then( (res) => {
            if (res.status == 200) {
                console.log("Hit API Success");
-               favourite ? setIconColour(UNFAVOURITE_COLOR) : setIconColour(FAVOURITE_COLOUR);
+               favourite ? setFavouriteIcon(UNFAVOURITE_ICON) : setFavouriteIcon(FAVOURITE_ICON);
                setFavourite(prevFavourite => !prevFavourite);
                ToastAndroid.showWithGravity(favourite ? "Removed from Favourite" : "Added to Favourites", ToastAndroid.SHORT, ToastAndroid.CENTER);
            }
@@ -80,29 +81,49 @@ const LocationObject = ({location, navButton, navigation, image, backToNavigatio
     }, []);
 
     return (
-        <Card>
+        <Card
+        accessible={true}
+        accessibilityLabel={`Card for coffee named ${location.location_name} in ${location.location_town}.`}>
             <Card.Title
+            accessible={true}
+            accessibilityRole="header"
             title={location.location_name}
             subtitle={location.location_town}
             left={props => (
                 <TouchableOpacity
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityHint={`${favourite ? "Unfavourite" : "Favourite"} this location.`}
                 onPress={ handle_favourite_btn_click }>
-                    <Icon name="star" size={25} color={iconColour}/>
+                    <Icon 
+                    accessible={true}
+                    accessibilityLabel={`Icon of star showing favourite status. Current status if ${favourite ? "Favourite" : "Not favourite."}`}
+                    name={favouriteIcon}
+                    size={25} 
+                    color={FAVOURITE_COLOUR}/>
                 </TouchableOpacity>
             
             )}>
             </Card.Title>
-            <Card.Cover source={{ uri: image != null ? image : locationImage }} />
+            <Card.Cover 
+            accessible={true}
+            accessibilityRole="image"
+            accessibilityLabel={`Image of ${location.location_name} in ${location.location_town}.`}
+            source={{ uri: image != null ? image : locationImage }}/>
             <Card.Actions style={styles.cardActions}>
                 { navButton ? (
                     <Button
+                    accessibilityHint={`Navigate to ${location.location_name} in ${location.location_town} page.`}
                     onPress={() => navigation.navigate('Location', { id: location.location_id, backToNavigation: backToNavigation })}
                     mode="contained"
                     icon="arrow-right"
                     >
                     Check Out</Button>
                 ):
-                <View style={{width: '100%'}}>
+                <View 
+                accessible={true}
+                accessibilityLabel={`Ratings container for ${location.location_name} in ${location.location_town}.`}
+                style={{width: '100%'}}>
                     <RatingsBar title="Price Rating" icon="attach-money" rating={location.avg_price_rating}/>
                     <RatingsBar title="Quality Rating" icon="star-rate" rating={location.avg_quality_rating}/>
                     <RatingsBar title="Clenliness Rating" icon="cleaning-services" rating={location.avg_clenliness_rating}/>   

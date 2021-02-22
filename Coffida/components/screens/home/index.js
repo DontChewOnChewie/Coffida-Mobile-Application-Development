@@ -14,6 +14,8 @@ const Home = ({navigation}) => {
         const get_shop_data = async () => {
             try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
             catch (error) { console.log("error"); return; /* Catch for if no token stored. */ }
+
+            setLoading(true);
     
             fetch(`http://10.0.2.2:3333/api/1.0.0/find`, {
                 method : "get",
@@ -44,7 +46,10 @@ const Home = ({navigation}) => {
 
     if (loading) {
         return (
-            <View style={styles.container}>
+            <View
+            accessible={true}
+            accessibilityLabel="Page loading." 
+            style={styles.container}>
                 <ActivityIndicator animating={true}/>
             </View>
         ); 
@@ -52,6 +57,9 @@ const Home = ({navigation}) => {
         return (
             <View style={[styles.container, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
                 <FlatList
+                accessible={true}
+                accessibilityRole="scrollbar"
+                accessibilityLabel="Scrollable list of locations."
                 style={styles.list}
                 data={locations}
                 keyExtractor={ item => item.location_id.toString() }

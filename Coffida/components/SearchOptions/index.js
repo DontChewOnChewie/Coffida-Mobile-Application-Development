@@ -8,6 +8,8 @@ const SearchOptions = ({setShowFilter, sortByLocationFunction}) => {
     
     return (
         <FAB.Group
+          accessible={true}
+          accessibilityLabel="Drop down menu for search options."
           open={open}
           icon={open ? 'minus' : 'plus'}
           actions={[
@@ -25,7 +27,6 @@ const SearchOptions = ({setShowFilter, sortByLocationFunction}) => {
           onStateChange={onStateChange}
           onPress={() => {
             if (open) {
-              // do something if the speed dial is open
             }
           }}
         />

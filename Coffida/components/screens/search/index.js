@@ -122,6 +122,7 @@ const Search = ({navigation}) => {
 
         <View style={styles.searchBarWrapper}>
             <Searchbar
+                accessibilityLabel="Form input for search query."
                 style={styles.searchBar}
                 placeholder="Search"
                 onChangeText={text => setSearchQuery(text)}
@@ -132,6 +133,9 @@ const Search = ({navigation}) => {
 
         {loading ? <ActivityIndicator animating={true}/> : 
             <FlatList
+            accessible={true}
+            accessibilityRole="scrollbar"
+            accessibilityLabel="Scrollable list of filtered locations."
             style={styles.list}
             data={queriedLocations}
             keyExtractor={ item => item.location_id.toString() }

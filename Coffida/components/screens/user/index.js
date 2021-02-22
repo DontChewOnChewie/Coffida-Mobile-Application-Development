@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ToastAndroid } from 'react-native';
+import { View, ToastAndroid, ImageBackground } from 'react-native';
 import { Button, TextInput, Text, FAB } from 'react-native-paper';
 import styles from './styles'
 import AsyncStoreHelper from '../../AsyncStoreHelper';
@@ -93,7 +93,11 @@ const User = ({navigation}) => {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <ImageBackground
+        accessible={true}
+        accessibilityLabel="Background image of coffee on table."
+        source={require('../../../images/loginBG.jpg')}
+        style={styles.container}>
 
             { error !== null ?
                 <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
@@ -102,55 +106,58 @@ const User = ({navigation}) => {
             <Text style={styles.title}>{firstName} {secondName}'s Page</Text>
 
             <TextInput
-            mode="outlined"
+            accessibilityLabel="Form input for first name edit."
             style={styles.input}
             onChangeText={ text => setFirstName(text) }
             value={firstName}
-            placeholder={"First Name..."}/>   
+            label="First Name"/>   
 
             <TextInput
-            mode="outlined"
+            accessibilityLabel="Form input for second name edit."
             style={styles.input}
             onChangeText={ text => setSecondName(text) }
             value={secondName}
-            placeholder={"Second Name..."}/>   
+            label="Second Name"/>   
 
             <TextInput
-            mode="outlined"
+            accessibilityLabel="Form input for email edit."
             style={styles.input}
             onChangeText={ text => setEmail(text) }
             value={email}
-            placeholder={"Email..."}/>   
+            label="Email"/>   
 
             <TextInput
-            mode="outlined"
+            accessibilityLabel="Form input for password edit."
             style={styles.input}
             onChangeText={ text => setPassword(text) }
             value={password}
-            placeholder={"Password..."}
+            label="Password"
             secureTextEntry={true}/>    
 
             <TextInput
-            mode="outlined"
+            accessibilityLabel="Form input for confirming password edit."
             style={styles.input}
             onChangeText={ text => setConfirmPasswrd(text) }
             value={confirmPassword}
-            placeholder={"Confirm Password..."}
+            label="Confirm Password"
             secureTextEntry={true}/>   
 
             <Button
+            accessibilityHint="Attempt to change your details to the form inputs above."
             style={styles.loginButton}
             mode="contained"
             onPress={ () => change_user_details() }>
             Update Details</Button>
 
             <FAB
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityHint="Navigate to your activity page."
             style={{position:'absolute', bottom: 25, right: 25}}
-            small
             icon="plus"
             onPress={() => navigation.navigate("UserActivity", {favourite_locations: favouriteLocations, reviewed_locations: reviewedLocations})}
             />
-        </View>
+        </ImageBackground>
     ); 
 
 };

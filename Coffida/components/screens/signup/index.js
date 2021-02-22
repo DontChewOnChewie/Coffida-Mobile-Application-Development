@@ -62,13 +62,19 @@ const SignUp = ({navigation}) => {
 
     if (loading) {
         return (
-            <View style={{alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%'}}>
+            <View 
+            accessbile={true}
+            accessibilityLabel="Loading page."
+            style={{alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%'}}>
                 <ActivityIndicator/>
             </View>
         );
     } else {
         return (
-            <ImageBackground source={require('../../../images/loginBG.jpg')}
+            <ImageBackground 
+            accessible={true}
+            accessibilityLabel="Background image of coffee on table."
+            source={require('../../../images/loginBG.jpg')}
             style={styles.container}>
 
                 { error !== null ? 
@@ -77,38 +83,40 @@ const SignUp = ({navigation}) => {
                 <Text style={styles.header}>Sign Up</Text>
 
                 <TextInput
-                mode="outlined"
+                accessibilityLabel="Form input for first name."
+                label="First Name"
                 style={styles.input}
-                onChangeText={ text => setFirstName(text) }
-                placeholder={"First Name..."}/>
+                onChangeText={ text => setFirstName(text) }/>
 
                 <TextInput
-                mode="outlined"
+                accessibilityLabel="Form input for second name."
+                label="Second Name"
                 style={styles.input}
-                onChangeText={ text => setSecondName(text) }
-                placeholder={"Second Name..."}/>
+                onChangeText={ text => setSecondName(text) }/>
 
                 <TextInput
-                mode="outlined"
+                accessibilityLabel="Form input for email address."
+                label="Email"
                 style={styles.input}
-                onChangeText={ text => setEmail(text) }
-                placeholder={"Email Address..."}/>
+                onChangeText={ text => setEmail(text) }/>
 
                 <TextInput
-                mode="outlined"
+                accessibilityLabel="Form input for password."
+                label="Password"
                 style={styles.input}
                 onChangeText={ text => setPassword(text) }
-                placeholder={"Password..."}
                 secureTextEntry={true}/>   
 
                 <TextInput
-                mode="outlined"
+                accessibilityLabel="Form input for confirming password."
+                accessibilityHint="Must match previous input."
+                label="Confirm Password"
                 style={styles.input}
                 onChangeText={ text => setConfirmPassword(text) }
-                placeholder={"Confrim Password..."}
                 secureTextEntry={true}/>       
 
                 <Button
+                accessibilityHint="Try signing up with inputted credentials."
                 style={styles.loginButton}
                 mode="contained"
                 icon="arrow-right"
@@ -116,6 +124,8 @@ const SignUp = ({navigation}) => {
                 Sign Up</Button>
 
                 <Button
+                accessibilityLabel="Button to navigate to sign in page."
+                accessibilityHint="Only use this if you already have an account."
                 mode="text"
                 icon="arrow-right"
                 color="white"

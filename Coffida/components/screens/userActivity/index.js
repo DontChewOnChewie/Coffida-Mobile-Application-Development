@@ -15,12 +15,18 @@ const UserActivity = ({navigation, route}) => {
     return (
         <View>
             <FlatList
+                accessible={true}
+                accessibilityRole="scrollbar"
+                accessibilityLabel="Scrollable list of your location activity."
                 data={favouriteLocations}
                 keyExtractor={ item => item.location_id.toString() }
                 renderItem={({ item }) => ( 
                 <LocationObject location={item} navButton={true} navigation={navigation} backToNavigation={["User", {screen: 'UserActivity'}]}/>
                  )}/>
             <FlatList
+                accessible={true}
+                accessibilityRole="scrollbar"
+                accessibilityLabel="Scrollable list of your posted review activity."
                 data={reviewedLocations}
                 keyExtractor={item => item.review.review_id.toString()}
                 renderItem={({ item }) => ( 
