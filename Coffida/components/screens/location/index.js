@@ -1,106 +1,125 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StatusBar } from 'react-native';
-import { Title, Button, Subheading, ActivityIndicator, FAB } from 'react-native-paper';
+import { View, FlatList } from 'react-native';
+import {
+  Button,
+  Subheading,
+  ActivityIndicator,
+} from 'react-native-paper';
+import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
 import ReviewObject from '../../ReviewObject';
 
-const Location = ({navigation, route}) => {
-    const [location, setLocation] = useState('');
-    const [reviews, setReviews] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [imageURI, setImageURI] = useState(null);
-    const [hasNotch, setHasNotch] = useState(0);
-    const location_id = route.params.id;
-    const back_button_arguments = route.params.backToNavigation;
+const Location = ({ navigation, route }) => {
+  const [location, setLocation] = useState('');
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [imageURI, setImageURI] = useState('');
+  const locationId = route.params.id;
 
-    const get_location_details = async () => {
-        await fetch(`http://10.0.2.2:3333/api/1.0.0/location/${location_id}`, {
-            method : "get",
-            headers: {
-                'Content-Type': "application/json"
-            },
-        })
-        .then( (res) => {
-           if (res.status == 200) {
-               return res.json();
-           }
-           else console.log("Something went wrong with the status.");
-        })
-        .then( (data) => {
-            setLocation(data);
-            setReviews(data.location_reviews);
-            setLoading(false);
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
-    } 
+  const getLocationDetails = async () => {
+    await fetch(`http://10.0.2.2:3333/api/1.0.0/location/${locationId}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        return 'Error';
+      })
+      .then((data) => {
+        if (data !== 'Error') {
+          setLocation(data);
+          setReviews(data.location_reviews);
+          setLoading(false);
+        }
+      })
+      .catch(() => {});
+  };
 
-    useEffect( () => {
-        const unsubscribe = navigation.addListener('focus', () => {get_location_details();});
-        get_location_details();
-        setHasNotch(StatusBar.currentHeight);
-    }, []);
+  useEffect(() => {
+    navigation.addListener('focus', () => { getLocationDetails(); });
+    getLocationDetails();
+  }, []);
 
-    if (loading) {
-        return(
-            <View
-            accessbile={true}
-            accessibilityLabel="Loading page." 
-            style={[styles.size100, styles.whiteBackground]}>
-                <ActivityIndicator/>
-            </View>
-        );
-    } else {
-        return (
-            <View style={[styles.containerNoFlex,, styles.whiteBackground, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
+  if (loading) {
+    return (
+      <View
+        accessbile
+        accessibilityLabel="Loading page."
+        style={[styles.size100, styles.whiteBackground]}
+      >
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  return (
+    <View style={[
+      styles.flex1,
+      styles.containerNoFlex,
+      styles.whiteBackground]}
+    >
 
-                <LocationObject 
-                location={location}
-                navButton={false}
-                image={imageURI}
-                userFavourited={location.user_favourited}
-                />
+      <LocationObject
+        location={location}
+        navButton={false}
+        image={imageURI}
+        navigation={navigation}
+      />
 
-                <View
-                accessible={true}
-                accessibilityRole="header"
-                accessibilityLabel="Header for reviews." 
-                style={styles.reiviewHeadingWrapper}>
-                    <Subheading>Reviews : {reviews.length}</Subheading>
-                    <Button
-                    accessibilityHint="Navigate to create new review page."
-                    onPress={() => navigation.navigate("Review", {location_id: location_id, previous_review: undefined, has_image: null})}
-                    style={styles.button40}
-                    mode="contained"
-                    icon="arrow-right">
-                    Leave Review</Button>
-                </View>
+      <View
+        accessible
+        accessibilityRole="header"
+        accessibilityLabel="Header for reviews."
+        style={styles.reiviewHeadingWrapper}
+      >
+        <Subheading>
+          Reviews :
+          {reviews.length}
+        </Subheading>
+        <Button
+          accessibilityHint="Navigate to create new review page."
+          onPress={() => navigation.navigate('Review', { location_id: locationId, previous_review: {}, has_image: '' })}
+          style={styles.button40}
+          mode="contained"
+          icon="arrow-right"
+        >
+          Leave Review
+        </Button>
+      </View>
 
-                <FlatList
-                accesible={true}
-                accessibilityRole="scrollbar"
-                accessibilityLabel={`Scrollable list of reviews for ${location.location_name} in ${location.location_town}.`}
-                data={reviews}
-                keyExtractor={item => item.review_id.toString()}
-                renderItem={({ item }) => ( 
-                    <ReviewObject review={item} locationId={location.location_id} reviewListState={[reviews, setReviews]} navigation={navigation} setGlobalImageURI={setImageURI}/>
-                )}/>
+      <FlatList
+        accesible
+        accessibilityRole="scrollbar"
+        accessibilityLabel={`Scrollable list of reviews for ${location.location_name} in ${location.location_town}.`}
+        data={reviews}
+        keyExtractor={(item) => item.review_id.toString()}
+        renderItem={({ item }) => (
+          <ReviewObject
+            review={item}
+            locationId={location.location_id}
+            reviewListState={[reviews, setReviews]}
+            navigation={navigation}
+            setGlobalImageURI={setImageURI}
+          />
+        )}
+      />
 
-                <FAB
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityHint="Go back to previous page."
-                style={[styles.locationBackButton, {top: hasNotch > 24 ? hasNotch + 20 : 20}]}
-                small
-                icon="arrow-left"
-                onPress={() => navigation.navigate(back_button_arguments[0], back_button_arguments[1])}
-                />
+    </View>
+  );
+};
 
-            </View>
-        ); 
-    }
-
+Location.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    addListener: PropTypes.func.isRequired,
+  }).isRequired,
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.number,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default Location;

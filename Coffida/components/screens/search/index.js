@@ -1,158 +1,169 @@
-import React, {useState, useEffect} from 'react';
-import {View, StatusBar} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StatusBar, FlatList } from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../../../styles'
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
+import PropTypes from 'prop-types';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
-import { FlatList } from 'react-native-gesture-handler';
 import LocationObject from '../../LocationObject';
 import SearchOptions from '../../SearchOptions';
 import FilterModal from '../../FilterModal';
-import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location';
 
-const Search = ({navigation}) => {
-    const [hasNotch, setHasNotch] = useState(0);
-    const [queriedLocations, setQueriedLocations] = useState([]);
+const Search = ({ navigation }) => {
+  const [hasNotch, setHasNotch] = useState(0);
+  const [queriedLocations, setQueriedLocations] = useState([]);
 
-    const [searchQuery, setSearchQuery] = useState('');  
-    const [overallRatingSearch, setOverallRatingSearch] = useState('');
-    const [overallPriceRatingSearch, setOverallPriceRatingSearch] = useState('');
-    const [overallQualityRatingSearch, setOverallQualityRatingSearch] = useState('');
-    const [overallClenlinessRatingSearch, setOverallClenlinessRatingSearch] = useState('');
-    const [searchIn, setSearchIn] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [overallRatingSearch, setOverallRatingSearch] = useState('');
+  const [overallPriceRatingSearch, setOverallPriceRatingSearch] = useState('');
+  const [overallQualityRatingSearch, setOverallQualityRatingSearch] = useState('');
+  const [overallClenlinessRatingSearch, setOverallClenlinessRatingSearch] = useState('');
+  const [searchIn, setSearchIn] = useState(null);
 
-    const [loading, setLoading] = useState(false);
-    const [showFilter, setShowFilter] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
-    const [userLocation, setUserLocation] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
 
-    const create_search_address = () => {
-        let search_address = `http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}`
-        if (overallRatingSearch != '') search_address = search_address + `&overall_rating=${overallRatingSearch}`;
-        if (overallPriceRatingSearch != '') search_address = search_address + `&price_rating=${overallPriceRatingSearch}`;
-        if (overallQualityRatingSearch != '') search_address = search_address + `&quality_rating=${overallQualityRatingSearch}`;
-        if (overallClenlinessRatingSearch != '') search_address = search_address + `&clenliness_rating=${overallClenlinessRatingSearch}`;
-        if (searchIn != null) search_address = search_address + `&search_in=${searchIn}`;
-        return search_address;
-    }
+  const createSearchAddress = () => {
+    let searchAdrress = `http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}`;
+    if (overallRatingSearch !== '') searchAdrress += `&overall_rating=${overallRatingSearch}`;
+    if (overallPriceRatingSearch !== '') searchAdrress += `&price_rating=${overallPriceRatingSearch}`;
+    if (overallQualityRatingSearch !== '') searchAdrress += `&quality_rating=${overallQualityRatingSearch}`;
+    if (overallClenlinessRatingSearch !== '') searchAdrress += `&clenliness_rating=${overallClenlinessRatingSearch}`;
+    if (searchIn != null) searchAdrress += `&search_in=${searchIn}`;
+    return searchAdrress;
+  };
 
-    const do_search = async () => {
-        setLoading(true);
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
-        catch (error) { console.log("error"); return; /* Catch for if no token stored. */ }
+  const doSearch = async () => {
+    setLoading(true);
+    let token;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+    } catch (error) { return; /* Catch for if no token stored. */ }
 
-        const address = create_search_address();
-        console.log(address);
-    
-        fetch(address, {
-            method : "get",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-        })
-        .then( (res) => {
-        if (res.status == 200) {
-            return res.json();
+    const address = createSearchAddress();
+
+    fetch(address, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        return 'Error';
+      })
+      .then((data) => {
+        if (data !== 'Error') {
+          setQueriedLocations(data);
+          setLoading(false);
         }
-        else console.log("Something went wrong with the status.");
-        })
-        .then( (data) => {
-            setQueriedLocations(data);
-            setLoading(false);
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
-    }
+      })
+      .catch(() => {});
+  };
 
-    const sort_locations_for_nearest = (locations) => {
-        const sorted_array = locations.map(location => ({
-            ...location,
-            distanceValue: (Math.abs(userLocation.coords.latitude - location.latitude)) + (Math.abs(userLocation.coords.longitude - location.longitude))
-        }));
+  const sortLocationsByNearest = (locations) => {
+    const sortedArray = locations.map((location) => ({
+      ...location,
+      distanceValue:
+        (Math.abs(userLocation.coords.latitude - location.latitude))
+        + (Math.abs(userLocation.coords.longitude - location.longitude)),
+    }));
 
-        sorted_array.sort((a,b) => { return a.distanceValue - b.distanceValue; });
-        setQueriedLocations(sorted_array);
-    }
+    sortedArray.sort((a, b) => (a.distanceValue - b.distanceValue));
+    setQueriedLocations(sortedArray);
+  };
 
-    const get_nearby_locations_fetch = async () => {
-        if (userLocation == null) return;
+  const getNearbyLocationsFetch = async () => {
+    if (userLocation == null) return;
 
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
-        catch (error) { console.log("error"); return; /* Catch for if no token stored. */ }
+    let token;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+    } catch (error) { return; /* Catch for if no token stored. */ }
 
-        setLoading(true);
+    setLoading(true);
 
-        fetch("http://10.0.2.2:3333/api/1.0.0/find", {
-            method : "get",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-        })
-        .then( (res) => {
-        if (res.status == 200) {
-            return res.json();
+    fetch('http://10.0.2.2:3333/api/1.0.0/find', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        return 'Error';
+      })
+      .then((data) => {
+        if (data !== 'Error') {
+          sortLocationsByNearest(data);
+          setLoading(false);
         }
-        else console.log("Something went wrong with the status.");
-        })
-        .then( (data) => {
-            sort_locations_for_nearest(data);
-            setLoading(false);
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
+      })
+      .catch(() => {});
+  };
+
+  const getNearbyLocations = async () => {
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status === 'granted') {
+      const location = await Location.getCurrentPositionAsync({ accuracy: 5 });
+      setUserLocation(location);
+      getNearbyLocationsFetch();
     }
+  };
 
-    const get_nearby_locations = async () => {
-        const {status} = await Permissions.askAsync(Permissions.LOCATION);
-        if (status == 'granted') {
-            let location = await Location.getCurrentPositionAsync({accuracy: 5});
-            // console.log(JSON.stringify(location, null, 4));
-            setUserLocation(location);
-            get_nearby_locations_fetch();
-        }
-    }
+  useEffect(() => {
+    setHasNotch(StatusBar.currentHeight);
+  }, []);
 
-    useEffect(() => {
-        setHasNotch(StatusBar.currentHeight);
-    }, []);
+  return (
+    <View style={[
+      styles.size100,
+      styles.whiteBackgrounde,
+      hasNotch > 24 ? { paddingTop: hasNotch } : null]}
+    >
 
-    return (
-    <View style={[styles.size100, styles.whiteBackgrounde, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
+      <Searchbar
+        accessibilityLabel="Form input for search query."
+        placeholder="Search"
+        onChangeText={(text) => setSearchQuery(text)}
+        value={searchQuery}
+        onIconPress={() => doSearch()}
+      />
 
-        <Searchbar
-            accessibilityLabel="Form input for search query."
-            placeholder="Search"
-            onChangeText={text => setSearchQuery(text)}
-            value={searchQuery}
-            onIconPress={() => do_search()}
+      {loading ? <ActivityIndicator animating /> : (
+        <FlatList
+          accessible
+          accessibilityRole="scrollbar"
+          accessibilityLabel="Scrollable list of filtered locations."
+          data={queriedLocations}
+          keyExtractor={(item) => item.location_id.toString()}
+          renderItem={({ item }) => (
+            <LocationObject location={item} navButton navigation={navigation} image="" />
+          )}
         />
+      )}
 
-        {loading ? <ActivityIndicator animating={true}/> : 
-            <FlatList
-            accessible={true}
-            accessibilityRole="scrollbar"
-            accessibilityLabel="Scrollable list of filtered locations."
-            data={queriedLocations}
-            keyExtractor={ item => item.location_id.toString() }
-            renderItem={({ item }) => ( 
-            <LocationObject location={item} navButton={true} navigation={navigation} backToNavigation={["Search", {}]}/>
-            )}/>
-        }
-
-        <SearchOptions setShowFilter={setShowFilter} sortByLocationFunction={get_nearby_locations}/>
-        <FilterModal 
-        showFilter={[showFilter, setShowFilter]} 
+      <SearchOptions setShowFilter={setShowFilter} sortByLocationFunction={getNearbyLocations} />
+      <FilterModal
+        showFilter={[showFilter, setShowFilter]}
         overallRating={[overallRatingSearch, setOverallRatingSearch]}
         overallPriceRating={[overallPriceRatingSearch, setOverallPriceRatingSearch]}
-        overallQualityRating = {[overallQualityRatingSearch, setOverallQualityRatingSearch]}
+        overallQualityRating={[overallQualityRatingSearch, setOverallQualityRatingSearch]}
         overallClenlinessRating={[overallClenlinessRatingSearch, setOverallClenlinessRatingSearch]}
         searchIn={[searchIn, setSearchIn]}
-        />
+      />
 
-      </View>
-    );
+    </View>
+  );
+};
 
+Search.propTypes = {
+  navigation: PropTypes.shape({}).isRequired,
 };
 
 export default Search;

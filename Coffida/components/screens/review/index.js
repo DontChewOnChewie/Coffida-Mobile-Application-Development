@@ -1,238 +1,297 @@
-import React, {useEffect, useState} from 'react';
-import { View, ToastAndroid, TouchableOpacity, ImageBackground } from 'react-native';
-import { Button, TextInput, Title, Dialog, Paragraph, Text } from 'react-native-paper';
+/* eslint-disable radix */
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  ToastAndroid,
+  TouchableOpacity,
+  ImageBackground,
+} from 'react-native';
+import {
+  Button,
+  TextInput,
+  Paragraph,
+  Text,
+} from 'react-native-paper';
+// eslint-disable-next-line import/no-unresolved
+import Icon from 'react-native-vector-icons/FontAwesome';
+import PropTypes from 'prop-types';
 import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
-import {ReviewValidation} from '../../InputHandler';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { ReviewValidation } from '../../InputHandler';
 
-const LIKE_COLOR = '#6200ee';
+const backgroundImage = require('../../../images/loginBG.jpg');
 
-const Review = ({navigation, route}) => {
-    const [priceRating, setPriceRating] = useState('');
-    const [qualityRating, setQualityRating] = useState('');
-    const [clenlisnessRating, setClenlisnessRating] = useState('');
-    const [reviewBody, setReviewBody] = useState('');
-    const [review, setReview] = useState(undefined);
-    const [error, setError] = useState(null);
-    const [imageButtonDisabled, setImageButtonDisabled] = useState(true);
-    const [reviewId, setReviewId] = useState('');
+const Review = ({ navigation, route }) => {
+  const [priceRating, setPriceRating] = useState('');
+  const [qualityRating, setQualityRating] = useState('');
+  const [clenlisnessRating, setClenlisnessRating] = useState('');
+  const [reviewBody, setReviewBody] = useState('');
+  const [review, setReview] = useState(undefined);
+  const [error, setError] = useState(null);
+  const [imageButtonDisabled, setImageButtonDisabled] = useState(true);
+  const [reviewId, setReviewId] = useState('');
 
-    const {location_id, previous_review, has_image} = route.params;
+  const locationId = route.params.location_id;
+  const previousReview = route.params.previous_review;
+  const hasImage = route.params.has_image;
 
-    const validate_review = () => {
-        const isValid = ReviewValidation(priceRating, qualityRating, clenlisnessRating, reviewBody);
-        typeof(isValid) !== "boolean" ? setError(isValid) : setError(null);
-        return typeof(isValid) !== "boolean" ? false : true;
+  const validateReview = () => {
+    const isValid = ReviewValidation(priceRating, qualityRating, clenlisnessRating, reviewBody);
+    if (typeof (isValid) !== 'boolean') {
+      setError(isValid);
+      return false;
     }
+    setError(null);
+    return true;
+  };
 
-    const get_new_review_id = async () => {
-        try { var {token, id} =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
-        catch (error) { return null; /* Catch for if no token stored. */ }
+  const getNewReviewId = async () => {
+    let token;
+    let id;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+      id = JSON.parse(await AsyncStoreHelper.getCredentials()).id;
+    } catch (anError) { return null; /* Catch for if no token stored. */ }
 
-        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
-            method : "get",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-        })
-        .then( (res) => {
-           if (res.status == 200) {
-               return res.json();
-           }
-           else console.log("Something went wrong with the status.");
-        })
-        .then( (data) => {
-            const last_review = data.reviews[data.reviews.length - 1];
-            setReviewId(last_review.review.review_id);
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
-    }
-    
-    const submitReview = async () => {
-        if (!validate_review()) return;
-
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
-        catch (error) { return; /* Catch for if no token stored. */ }
-
-        fetch(`http://10.0.2.2:3333/api/1.0.0/location/${location_id}/review`, {
-            method : "post",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-            body: JSON.stringify({
-                "overall_rating": parseInt((parseInt(priceRating) + parseInt(qualityRating) + parseInt(clenlisnessRating))/3),
-                "price_rating": parseInt(priceRating),
-                "quality_rating": parseInt(qualityRating),
-                "clenliness_rating": parseInt(clenlisnessRating),
-                "review_body": reviewBody
-            })
-        })
-        .then( async (res) => {
-           if (res.status == 201) {
-               ToastAndroid.showWithGravity("Review Added", ToastAndroid.SHORT, ToastAndroid.CENTER);
-               const new_review_id = await get_new_review_id();
-               setImageButtonDisabled(false);
-           }
-           else console.log("Something went wrong with the status.");
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
-    }
-
-    const update_review = async () => {
-        if (!validate_review()) return;
-
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
-        catch (error) { return; /* Catch for if no token stored. */ }
-
-        fetch(`http://10.0.2.2:3333/api/1.0.0/location/${location_id}/review/${review.review_id}`, {
-            method : "patch",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-            body: JSON.stringify({
-                "overall_rating": parseInt((parseInt(priceRating) + parseInt(qualityRating) + parseInt(clenlisnessRating))/3),
-                "price_rating": parseInt(priceRating),
-                "quality_rating": parseInt(qualityRating),
-                "clenliness_rating": parseInt(clenlisnessRating),
-                "review_body": reviewBody
-            })
-        })
-        .then( (res) => {
-           if (res.status == 200) {
-               ToastAndroid.showWithGravity("Review Updated", ToastAndroid.SHORT, ToastAndroid.CENTER);
-           }
-           else console.log("Something went wrong with the status.");
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
-    }
-
-    const delete_image = async () => {
-        try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
-        catch (error) { return; /* Catch for if no token stored. */ }
-
-        fetch(`http://10.0.2.2:3333/api/1.0.0/location/${location_id}/review/${review.review_id}/photo`, {
-            method : "delete",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-        })
-        .then( (res) => {
-           if (res.status == 200) {
-               ToastAndroid.show("Image Deleted", ToastAndroid.SHORT);
-               setImageButtonDisabled(false);
-           }
-           else console.log("Something went wrong with the status.");
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
-    }
-    
-    useEffect(() => {
-        if (previous_review !== undefined) {
-            setReviewId(previous_review.review_id)
-            setReview(previous_review);
-            setPriceRating(previous_review.price_rating);
-            setQualityRating(previous_review.quality_rating);
-            setClenlisnessRating(previous_review.clenliness_rating);
-            setReviewBody(previous_review.review_body);
-            has_image == null ? setImageButtonDisabled(false) : null;
+    return fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        return 'Error';
+      })
+      .then((data) => {
+        if (data !== 'Error') {
+          const lastReview = data.reviews[data.reviews.length - 1];
+          setReviewId(lastReview.review.review_id);
         }
-    }, []);
+      })
+      .catch(() => {});
+  };
 
-    return (
-        <ImageBackground 
-        accessible={true}
-        accessibilityLabel="Background image of coffee on table."
-        source={require('../../../images/loginBG.jpg')}
-        style={styles.container}>
+  const submitReview = async () => {
+    if (!validateReview()) return;
 
-            {error !== null ?
-            <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
-            : null}
+    let token;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+    } catch (anError) { return; /* Catch for if no token stored. */ }
 
-            <Text style={styles.formTitle}>Leave a Review</Text>
+    fetch(`http://10.0.2.2:3333/api/1.0.0/location/${locationId}/review`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+      body: JSON.stringify({
+        overall_rating:
+        parseInt((
+          parseInt(priceRating) + parseInt(qualityRating) + parseInt(clenlisnessRating)
+        ) / 3),
+        price_rating: parseInt(priceRating),
+        quality_rating: parseInt(qualityRating),
+        clenliness_rating: parseInt(clenlisnessRating),
+        review_body: reviewBody,
+      }),
+    })
+      .then(async (res) => {
+        if (res.status === 201) {
+          ToastAndroid.showWithGravity('Review Added', ToastAndroid.SHORT, ToastAndroid.CENTER);
+          await getNewReviewId();
+          setImageButtonDisabled(false);
+        }
+      })
+      .catch(() => {});
+  };
 
-            <TextInput
-            accessibilityLabel="Form input for price rating."
-            accessibilityValue={{min: 0, max: 5, now: priceRating}}
-            style={styles.input90}
-            label="Price Rating..."
-            onChangeText={text => setPriceRating(text)}
-            keyboardType='number-pad'
-            maxLength={1}
-            value={priceRating.toString()}
-            />
+  const updateReview = async () => {
+    if (!validateReview()) return;
 
-            <TextInput
-            accessibilityLabel="Form input for quality rating."
-            accessibilityValue={{min: 0, max: 0, now: qualityRating}}
-            style={styles.input90}
-            label="Quality Rating..."
-            onChangeText={text => setQualityRating(text)}
-            keyboardType='number-pad'
-            maxLength={1}
-            value={qualityRating.toString()}
-            />
+    let token;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+    } catch (anError) { return; /* Catch for if no token stored. */ }
 
-            <TextInput
-            accessibilityLabel="Form input for clenliness rating."
-            accessibilityValue={{min: 0, max: 0, now: clenlisnessRating}}
-            style={styles.input90}
-            label="Clenliness Rating..."
-            onChangeText={text => setClenlisnessRating(text)}
-            keyboardType='number-pad'
-            maxLength={1}
-            value={clenlisnessRating.toString()}
-            />
+    fetch(`http://10.0.2.2:3333/api/1.0.0/location/${locationId}/review/${review.review_id}`, {
+      method: 'patch',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+      body: JSON.stringify({
+        overall_rating: parseInt((
+          parseInt(priceRating) + parseInt(qualityRating) + parseInt(clenlisnessRating)
+        ) / 3),
+        price_rating: parseInt(priceRating),
+        quality_rating: parseInt(qualityRating),
+        clenliness_rating: parseInt(clenlisnessRating),
+        review_body: reviewBody,
+      }),
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          ToastAndroid.showWithGravity('Review Updated', ToastAndroid.SHORT, ToastAndroid.CENTER);
+        }
+      })
+      .catch(() => {});
+  };
 
-            <TextInput
-            accessibilityLabel="Form input for comments on location."
-            accessibilityValue={{text: "Review body must be longer than 15 words but less than 500." }}
-            style={styles.textarea}
-            multiline={true}
-            numberOfLines={7}
-            label="Review Body..."
-            onChangeText={text => setReviewBody(text)}
-            value={reviewBody}
-            />
+  const deleteImage = async () => {
+    let token;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+    } catch (anError) { return; /* Catch for if no token stored. */ }
 
-            <View style={styles.reviewScreenButtonWrapper}>
-                <Button
-                accessibilityHint={`This will ${review == null ? "create" : "edit"} this review.`}
-                style={styles.button40}
-                mode="contained"
-                icon="arrow-right"
-                onPress={() => review === undefined ? submitReview() : update_review()}>
-                {review === undefined ? "Submit Review" : "Update Review"}</Button>
+    fetch(`http://10.0.2.2:3333/api/1.0.0/location/${locationId}/review/${review.review_id}/photo`, {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          ToastAndroid.show('Image Deleted', ToastAndroid.SHORT);
+          setImageButtonDisabled(false);
+        }
+      })
+      .catch(() => {});
+  };
 
-                <Button
-                accessibilityHint={`Add an image for this review, currently ${imageButtonDisabled ? "disabled" : "enabled"}.`}
-                style={styles.button40}
-                mode="contained"
-                icon="camera"
-                disabled={imageButtonDisabled}
-                onPress={() => navigation.navigate("Camera", {location_id: location_id, review_id: reviewId})}>
-                Add a Picture</Button>
-            </View>
+  useEffect(() => {
+    if (Object.keys(previousReview).length !== 0) {
+      setReviewId(previousReview.review_id);
+      setReview(previousReview);
+      setPriceRating(previousReview.price_rating);
+      setQualityRating(previousReview.quality_rating);
+      setClenlisnessRating(previousReview.clenliness_rating);
+      setReviewBody(previousReview.review_body);
+      if (hasImage === '' || hasImage == null) setImageButtonDisabled(false);
+    }
+  }, []);
 
-            {has_image != null ? 
-            <TouchableOpacity 
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityHint="Delete image for this review."
-                onPress={() => delete_image()}
-                style={styles.deleteImageButton}>
-                <Icon name="trash" size={25} color={"#FFFFFF"}></Icon>
-                <Paragraph style={styles.boldedWhiteText}>Remove Image</Paragraph>
-            </TouchableOpacity> : null}
-                
-        </ImageBackground>
-    );
-}
+  return (
+    <ImageBackground
+      accessible
+      accessibilityLabel="Background image of coffee on table."
+      source={backgroundImage}
+      style={styles.container}
+    >
 
-export default Review
+      {error !== null
+        ? <ErrorPopUp errorMessage={error} errorStateFunction={setError} />
+        : null}
+
+      <Text style={styles.formTitle}>Leave a Review</Text>
+
+      <TextInput
+        accessibilityLabel="Form input for price rating."
+        accessibilityValue={{ min: 0, max: 5, now: priceRating }}
+        style={styles.input90}
+        label="Price Rating..."
+        onChangeText={(text) => setPriceRating(text)}
+        keyboardType="number-pad"
+        maxLength={1}
+        value={priceRating.toString()}
+      />
+
+      <TextInput
+        accessibilityLabel="Form input for quality rating."
+        accessibilityValue={{ min: 0, max: 0, now: qualityRating }}
+        style={styles.input90}
+        label="Quality Rating..."
+        onChangeText={(text) => setQualityRating(text)}
+        keyboardType="number-pad"
+        maxLength={1}
+        value={qualityRating.toString()}
+      />
+
+      <TextInput
+        accessibilityLabel="Form input for clenliness rating."
+        accessibilityValue={{ min: 0, max: 0, now: clenlisnessRating }}
+        style={styles.input90}
+        label="Clenliness Rating..."
+        onChangeText={(text) => setClenlisnessRating(text)}
+        keyboardType="number-pad"
+        maxLength={1}
+        value={clenlisnessRating.toString()}
+      />
+
+      <TextInput
+        accessibilityLabel="Form input for comments on location."
+        accessibilityValue={{ text: 'Review body must be longer than 15 words but less than 500.' }}
+        style={styles.textarea}
+        multiline
+        numberOfLines={7}
+        label="Review Body..."
+        onChangeText={(text) => setReviewBody(text)}
+        value={reviewBody}
+      />
+
+      <View style={styles.reviewScreenButtonWrapper}>
+        <Button
+          accessibilityHint={`This will ${review == null ? 'create' : 'edit'} this review.`}
+          style={styles.button40}
+          mode="contained"
+          icon="arrow-right"
+          onPress={() => {
+            if (review === undefined) submitReview();
+            else updateReview();
+          }}
+        >
+          {review === undefined ? 'Submit Review' : 'Update Review'}
+        </Button>
+
+        <Button
+          accessibilityHint={`Add an image for this review, currently ${imageButtonDisabled ? 'disabled' : 'enabled'}.`}
+          style={styles.button40}
+          mode="contained"
+          icon="camera"
+          disabled={imageButtonDisabled}
+          onPress={() => navigation.navigate('Camera', { location_id: locationId, review_id: reviewId })}
+        >
+          Add a Picture
+        </Button>
+      </View>
+
+      {hasImage !== '' && hasImage !== null ? (
+        <TouchableOpacity
+          accessible
+          accessibilityRole="button"
+          accessibilityHint="Delete image for this review."
+          onPress={() => deleteImage()}
+          style={styles.deleteImageButton}
+        >
+          <Icon name="trash" size={25} color="#FFFFFF" />
+          <Paragraph style={styles.boldedWhiteText}>Remove Image</Paragraph>
+        </TouchableOpacity>
+      ) : null}
+    </ImageBackground>
+  );
+};
+
+Review.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      location_id: PropTypes.number,
+      previous_review: PropTypes.shape({
+        review_id: PropTypes.number,
+        price_rating: PropTypes.number,
+        quality_rating: PropTypes.number,
+        clenliness_rating: PropTypes.number,
+        review_body: PropTypes.string,
+      }).isRequired,
+      has_image: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
+};
+
+export default Review;

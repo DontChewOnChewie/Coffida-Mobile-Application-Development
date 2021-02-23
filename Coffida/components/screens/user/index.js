@@ -1,166 +1,193 @@
 import React, { useEffect, useState } from 'react';
-import { View, ToastAndroid, ImageBackground } from 'react-native';
-import { Button, TextInput, Text, FAB } from 'react-native-paper';
-import styles from '../../../styles'
+import { ToastAndroid, ImageBackground } from 'react-native';
+import {
+  Button,
+  TextInput,
+  Text,
+  FAB,
+} from 'react-native-paper';
+import PropTypes from 'prop-types';
+import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
-import {UserValidation} from '../../InputHandler';
+import { UserValidation } from '../../InputHandler';
 
+const backgroundImage = require('../../../images/loginBG.jpg');
 
-const User = ({navigation}) => {
-    const [firstName, setFirstName] = useState("");
-    const [secondName, setSecondName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPasswrd] = useState("");
+const User = ({ navigation }) => {
+  const [firstName, setFirstName] = useState('');
+  const [secondName, setSecondName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPasswrd] = useState('');
 
-    const [favouriteLocations, setFavouriteLocations] = useState([]);
-    const [reviewedLocations, setReviewedLocations] = useState([]);
+  const [favouriteLocations, setFavouriteLocations] = useState([]);
+  const [reviewedLocations, setReviewedLocations] = useState([]);
 
-    const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
 
-    const get_user_details = async () => {
-        try { var {token, id } =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
-        catch (error) { return; /* Catch for if no token stored. */ }
+  const getUserDetails = async () => {
+    let token;
+    let id;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+      id = JSON.parse(await AsyncStoreHelper.getCredentials()).id;
+    } catch (anError) { return; /* Catch for if no token stored. */ }
 
-        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
-            method : "get",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
-        })
-        .then( (res) => {
-           if (res.status == 200) {
-               console.log("Good Status");
-               return res.json();
-           }
-           else console.log("Something went wrong with the status.");
-        })
-        .then( (data) => {
-            setFirstName(data.first_name);
-            setSecondName(data.last_name);
-            setEmail(data.email);
-            setFavouriteLocations(data.favourite_locations);
-            setReviewedLocations(data.reviews);
-        })
-        .catch( (message) => { console.log("ERROR " + message); });
+    fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        return 'Error';
+      })
+      .then((data) => {
+        if (data !== 'Error') {
+          setFirstName(data.first_name);
+          setSecondName(data.last_name);
+          setEmail(data.email);
+          setFavouriteLocations(data.favourite_locations);
+          setReviewedLocations(data.reviews);
+        }
+      })
+      .catch(() => {});
+  };
+
+  const validateChanges = () => {
+    const isValid = UserValidation(firstName, secondName, email, password, confirmPassword);
+    if (typeof (isValid) !== 'boolean') {
+      setError(isValid);
+      return false;
     }
+    setError(null);
+    return true;
+  };
 
-    const validate_changes = () => {
-        const isValid = UserValidation(firstName, secondName, email, password, confirmPassword);
-        typeof(isValid) !== "boolean" ? setError(isValid) : setError(null);
-        return typeof(isValid) !== "boolean" ? false : true;
-    }
+  const getUserDetailChangesObject = () => {
+    const returnObject = {};
+    if (firstName !== '') returnObject.first_name = firstName;
+    if (secondName !== '') returnObject.last_name = secondName;
+    if (email !== '') returnObject.email = email;
+    if (password !== '') returnObject.password = password;
+    return returnObject;
+  };
 
-    const get_user_detail_changes_object = () => {
-        const return_object = {}
-        if (firstName !== "") return_object.first_name = firstName;
-        if (secondName !== "") return_object.last_name = secondName;
-        if (email !== "") return_object.email = email;
-        if (password !== "") return_object.password = password;
-        return return_object;
-    }
+  const changeUserDetails = async () => {
+    if (!validateChanges()) return;
 
-    const change_user_details = async() => {
-        if (!validate_changes()) return;
+    const userChanges = getUserDetailChangesObject();
+    let token;
+    let id;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+      id = JSON.parse(await AsyncStoreHelper.getCredentials()).id;
+    } catch (anError) { return; /* Catch for if no token stored. */ }
 
-        const user_changes = get_user_detail_changes_object();
-        try { var {token, id} =  JSON.parse(await AsyncStoreHelper.get_credentials()); }
-        catch (error) { return; /* Catch for if no token stored. */ }
+    fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
+      method: 'patch',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+      body: JSON.stringify(userChanges),
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          ToastAndroid.showWithGravity('Successfully Updated your Account!', ToastAndroid.SHORT, ToastAndroid.CENTER);
+        }
+      }).catch(() => {});
+  };
 
-        fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
-            method : "patch",
-            headers: {
-                'Content-Type': "application/json",
-                "X-Authorization": token
-            },
+  useEffect(() => {
+    navigation.addListener('focus', () => { getUserDetails(); });
+    getUserDetails();
+  }, []);
 
-            body: JSON.stringify(user_changes)
-        })
-        .then( (res) => {
-           if (res.status == 200) {
-               console.log("Good Status");
-               ToastAndroid.showWithGravity("Successfully Updated your Account!", ToastAndroid.SHORT, ToastAndroid.CENTER);
-           }
-           else console.log("Something went wrong with the status.");
-        }).catch( (message) => { console.log("ERROR " + message); });
-    }
+  return (
+    <ImageBackground
+      accessible
+      accessibilityLabel="Background image of coffee on table."
+      source={backgroundImage}
+      style={styles.container}
+    >
 
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {get_user_details();});
-        get_user_details();
-    }, []);
+      { error !== null ? <ErrorPopUp errorMessage={error} errorStateFunction={setError} /> : null}
 
-    return (
-        <ImageBackground
-        accessible={true}
-        accessibilityLabel="Background image of coffee on table."
-        source={require('../../../images/loginBG.jpg')}
-        style={styles.container}>
+      <Text style={styles.formTitle}>{`${firstName} ${secondName}'s Page`}</Text>
 
-            { error !== null ?
-                <ErrorPopUp errorMessage={error} errorStateFunction={setError}/>
-            : null}
+      <TextInput
+        accessibilityLabel="Form input for first name edit."
+        style={styles.input60}
+        onChangeText={(text) => setFirstName(text)}
+        value={firstName}
+        label="First Name"
+      />
 
-            <Text style={styles.formTitle}>{firstName} {secondName}'s Page</Text>
+      <TextInput
+        accessibilityLabel="Form input for second name edit."
+        style={styles.input60}
+        onChangeText={(text) => setSecondName(text)}
+        value={secondName}
+        label="Second Name"
+      />
 
-            <TextInput
-            accessibilityLabel="Form input for first name edit."
-            style={styles.input60}
-            onChangeText={ text => setFirstName(text) }
-            value={firstName}
-            label="First Name"/>   
+      <TextInput
+        accessibilityLabel="Form input for email edit."
+        style={styles.input60}
+        onChangeText={(text) => setEmail(text)}
+        value={email}
+        label="Email"
+      />
 
-            <TextInput
-            accessibilityLabel="Form input for second name edit."
-            style={styles.input60}
-            onChangeText={ text => setSecondName(text) }
-            value={secondName}
-            label="Second Name"/>   
+      <TextInput
+        accessibilityLabel="Form input for password edit."
+        style={styles.input60}
+        onChangeText={(text) => setPassword(text)}
+        value={password}
+        label="Password"
+        secureTextEntry
+      />
 
-            <TextInput
-            accessibilityLabel="Form input for email edit."
-            style={styles.input60}
-            onChangeText={ text => setEmail(text) }
-            value={email}
-            label="Email"/>   
+      <TextInput
+        accessibilityLabel="Form input for confirming password edit."
+        style={styles.input60}
+        onChangeText={(text) => setConfirmPasswrd(text)}
+        value={confirmPassword}
+        label="Confirm Password"
+        secureTextEntry
+      />
 
-            <TextInput
-            accessibilityLabel="Form input for password edit."
-            style={styles.input60}
-            onChangeText={ text => setPassword(text) }
-            value={password}
-            label="Password"
-            secureTextEntry={true}/>    
+      <Button
+        accessibilityHint="Attempt to change your details to the form inputs above."
+        style={styles.button60}
+        mode="contained"
+        icon="arrow-right"
+        onPress={() => changeUserDetails()}
+      >
+        Update Details
+      </Button>
 
-            <TextInput
-            accessibilityLabel="Form input for confirming password edit."
-            style={styles.input60}
-            onChangeText={ text => setConfirmPasswrd(text) }
-            value={confirmPassword}
-            label="Confirm Password"
-            secureTextEntry={true}/>   
+      <FAB
+        accessible
+        accessibilityRole="button"
+        accessibilityHint="Navigate to your activity page."
+        style={styles.fabBottomRight}
+        icon="plus"
+        onPress={() => navigation.navigate('UserActivity', { favourite_locations: favouriteLocations, reviewed_locations: reviewedLocations })}
+      />
+    </ImageBackground>
+  );
+};
 
-            <Button
-            accessibilityHint="Attempt to change your details to the form inputs above."
-            style={styles.button60}
-            mode="contained"
-            icon="arrow-right"
-            onPress={ () => change_user_details() }>
-            Update Details</Button>
-
-            <FAB
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityHint="Navigate to your activity page."
-            style={styles.fabBottomRight}
-            icon="plus"
-            onPress={() => navigation.navigate("UserActivity", {favourite_locations: favouriteLocations, reviewed_locations: reviewedLocations})}
-            />
-        </ImageBackground>
-    ); 
-
+User.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    addListener: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default User;

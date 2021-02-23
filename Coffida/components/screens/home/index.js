@@ -1,75 +1,87 @@
-import React, {useState, useEffect } from 'react';
-import {View, FlatList, StatusBar} from 'react-native';
-import { Text, ActivityIndicator } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, StatusBar } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
+import PropTypes from 'prop-types';
 import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
 
-const Home = ({navigation}) => {
-    const [hasNotch, setHasNotch] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [locations, setLocations] = useState([]);
+const Home = ({ navigation }) => {
+  const [hasNotch, setHasNotch] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [locations, setLocations] = useState([]);
 
-    useEffect( () => {
-        const get_shop_data = async () => {
-            try { var token =  JSON.parse(await AsyncStoreHelper.get_credentials()).token; }
-            catch (error) { console.log("error"); return; /* Catch for if no token stored. */ }
+  useEffect(() => {
+    const getShopData = async () => {
+      let token;
+      try {
+        token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+      } catch (error) { return; /* Catch for if no token stored. */ }
 
-            setLoading(true);
-    
-            fetch(`http://10.0.2.2:3333/api/1.0.0/find`, {
-                method : "get",
-                headers: {
-                    'Content-Type': "application/json",
-                    "X-Authorization": token
-                },
-            })
-            .then( (res) => {
-            if (res.status == 200) {
-                return res.json();
-            }
-            else console.log("Something went wrong with the status.");
-            })
-            .then( (data) => {
-                setLocations(data);
-                setLoading(false);
-            })
-            .catch( (message) => { console.log("ERROR " + message); });
-        }
+      setLoading(true);
+      fetch('http://10.0.2.2:3333/api/1.0.0/find', {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Authorization': token,
+        },
+      })
+        .then((res) => {
+          if (res.status === 200) return res.json();
+          return 'Erorr';
+        })
+        .then((data) => {
+          if (data !== 'Error') {
+            setLocations(data);
+            setLoading(false);
+          }
+        })
+        .catch(() => {});
+    };
 
-        get_shop_data();
-        setHasNotch(StatusBar.currentHeight);
-        const unsubscribe = navigation.addListener('focus', () => {
-            get_shop_data();
-        });
-    }, []);
+    getShopData();
+    setHasNotch(StatusBar.currentHeight);
+    navigation.addListener('focus', () => {
+      getShopData();
+    });
+  }, []);
 
-    if (loading) {
-        return (
-            <View
-            accessible={true}
-            accessibilityLabel="Page loading." 
-            style={[styles.container, styles.whiteBackground]}>
-                <ActivityIndicator animating={true}/>
-            </View>
-        ); 
-    } else {
-        return (
-            <View style={[styles.container, styles.whiteBackground, hasNotch > 24 ? {paddingTop: hasNotch} : null]}>
-                <FlatList
-                accessible={true}
-                accessibilityRole="scrollbar"
-                accessibilityLabel="Scrollable list of locations."
-                style={styles.size100}
-                data={locations}
-                keyExtractor={ item => item.location_id.toString() }
-                renderItem={({ item }) => ( 
-                <LocationObject location={item} navButton={true} navigation={navigation} backToNavigation={["Home", {}]}/>
-                 )}/>
-            </View>
-        ); 
-    }
+  if (loading) {
+    return (
+      <View
+        accessible
+        accessibilityLabel="Page loading."
+        style={[styles.container, styles.whiteBackground]}
+      >
+        <ActivityIndicator animating />
+      </View>
+    );
+  }
+  return (
+    <View
+      style={[styles.container,
+        styles.whiteBackground,
+        hasNotch > 24 ? { paddingTop: hasNotch } : null]}
+    >
+      <FlatList
+        accessible
+        accessibilityRole="scrollbar"
+        accessibilityLabel="Scrollable list of locations."
+        style={styles.size100}
+        data={locations}
+        keyExtractor={(item) => item.location_id.toString()}
+        renderItem={({ item }) => (
+          <LocationObject location={item} navButton navigation={navigation} image="" />
+        )}
+      />
+    </View>
+  );
+};
 
-}
+Home.propTypes = {
+  navigation: PropTypes.shape({
+    addListener: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default Home;
