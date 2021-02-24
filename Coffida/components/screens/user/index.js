@@ -10,14 +10,17 @@ import PropTypes from 'prop-types';
 import styles from '../../../styles';
 import AsyncStoreHelper from '../../AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
-import { UserValidation } from '../../InputHandler';
+import { NameValidation, EmailValidation, PasswordValidation } from '../../InputHandler';
 
 const backgroundImage = require('../../../images/loginBG.jpg');
 
 const User = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
+  const [currentFirstName, setCurrentFirstname] = useState('');
   const [secondName, setSecondName] = useState('');
+  const [currentSecondName, setCurrentSecondName] = useState('');
   const [email, setEmail] = useState('');
+  const [currentEmail, setCurrentEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPasswrd] = useState('');
 
@@ -48,8 +51,11 @@ const User = ({ navigation }) => {
       .then((data) => {
         if (data !== 'Error') {
           setFirstName(data.first_name);
+          setCurrentFirstname(data.first_name);
           setSecondName(data.last_name);
+          setCurrentSecondName(data.last_name);
           setEmail(data.email);
+          setCurrentEmail(data.email);
           setFavouriteLocations(data.favourite_locations);
           setReviewedLocations(data.reviews);
         }
@@ -57,35 +63,45 @@ const User = ({ navigation }) => {
       .catch(() => {});
   };
 
-  const validateChanges = () => {
-    const isValid = UserValidation(firstName, secondName, email, password, confirmPassword);
-    if (typeof (isValid) !== 'boolean') {
-      setError(isValid);
-      return false;
-    }
-    setError(null);
-    return true;
-  };
-
   const getUserDetailChangesObject = () => {
     const returnObject = {};
-    if (firstName !== '') returnObject.first_name = firstName;
-    if (secondName !== '') returnObject.last_name = secondName;
-    if (email !== '') returnObject.email = email;
-    if (password !== '') returnObject.password = password;
+    let errors = '';
+    if (firstName !== ''
+        && secondName !== ''
+        && (firstName !== currentFirstName || secondName !== currentSecondName)
+        && NameValidation(firstName, secondName)) {
+      returnObject.first_name = firstName;
+      returnObject.last_name = secondName;
+    } else errors += 'Name was not changed. If you wanted to change it make sure input is longer then 2\n';
+
+    if (email !== ''
+        && email !== currentEmail
+        && EmailValidation(email)) returnObject.email = email;
+    else errors += 'Email was not be changed. If you wanted to change it make sure email is valid or differ.\n';
+
+    if (password !== ''
+        && PasswordValidation(password, confirmPassword)) returnObject.password = password;
+    else errors += 'Password was not changed. If you wanted to change it make sure they match, have a symbol and a number in.\n';
+
+    errors += errors !== '' ? 'All other fields were changed.' : 'All details updated successfully.';
+    returnObject.errors = errors;
     return returnObject;
   };
 
   const changeUserDetails = async () => {
-    if (!validateChanges()) return;
-
-    const userChanges = getUserDetailChangesObject();
     let token;
     let id;
     try {
       token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
       id = JSON.parse(await AsyncStoreHelper.getCredentials()).id;
     } catch (anError) { return; /* Catch for if no token stored. */ }
+
+    const userChanges = getUserDetailChangesObject();
+    setError(userChanges.errors);
+    // Remove unneeded key for the patch request.
+    delete userChanges.errors;
+    // Check any changes were done.
+    if (Object.keys(userChanges).length === 0) return;
 
     fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
       method: 'patch',

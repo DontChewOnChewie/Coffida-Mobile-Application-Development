@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FAB } from 'react-native-paper';
 import PropTypes from 'prop-types';
 
-const SearchOptions = ({ setShowFilter, sortByLocationFunction }) => {
+const SearchOptions = ({ setShowFilter, sortByLocationFunction, showMap }) => {
   const [opened, setOpened] = useState({ open: false });
   const onStateChange = ({ open }) => setOpened({ open });
   const { open } = opened;
@@ -14,6 +14,11 @@ const SearchOptions = ({ setShowFilter, sortByLocationFunction }) => {
       open={open}
       icon={open ? 'minus' : 'plus'}
       actions={[
+        {
+          icon: 'map',
+          label: 'Show on Map',
+          onPress: () => showMap(),
+        },
         {
           icon: 'map-marker',
           label: 'Location Search',
@@ -33,8 +38,9 @@ const SearchOptions = ({ setShowFilter, sortByLocationFunction }) => {
 };
 
 SearchOptions.propTypes = {
-  setShowFilter: PropTypes.bool.isRequired,
+  setShowFilter: PropTypes.func.isRequired,
   sortByLocationFunction: PropTypes.func.isRequired,
+  showMap: PropTypes.func.isRequired,
 };
 
 export default SearchOptions;

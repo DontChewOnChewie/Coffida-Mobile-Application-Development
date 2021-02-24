@@ -1,14 +1,15 @@
 /* eslint-disable radix */
 /*  Everything to do with user input validation. */
-const NameValidation = (firstName, secondName) => (firstName.length > 2 && secondName.length > 2);
+// eslint-disable-next-line max-len
+export const NameValidation = (firstName, secondName) => (firstName.length > 2 && secondName.length > 2);
 
 // Taken from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-const EmailValidation = (email) => {
+export const EmailValidation = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 };
 
-const PasswordValidation = (password, confirmPassword) => {
+export const PasswordValidation = (password, confirmPassword) => {
   if (password !== confirmPassword) return false;
   if (password.length < 5) return false;
   if (!/\d/.test(password)) return false;
@@ -34,9 +35,12 @@ const bannedWords = ['tea', 'cakes', 'pastries', 'food', 'sandwiches'];
 
 const RatingValidation = (priceReview, qualityReview, clenlinessReview) => {
   if (priceReview === '' || qualityReview === '' || clenlinessReview === '') return 'Please make sure to leave a rating for each category.';
-  if (parseInt(priceReview) < 0 || parseInt(priceReview) > 5) return 'Price Rating must be between 0-5';
-  if (parseInt(qualityReview) < 0 || parseInt(qualityReview) > 5) return 'Quality Rating must be between 0-5';
-  if (parseInt(clenlinessReview) < 0 || parseInt(clenlinessReview) > 5) return 'Clenliness Rating must be between 0-5';
+  const priceReviewInt = parseInt(priceReview);
+  const qualityReviewInt = parseInt(qualityReview);
+  const clenlinessReviewInt = parseInt(clenlinessReview);
+  if (priceReviewInt < 0 || parseInt(priceReviewInt) > 5 || Object.is(NaN, priceReviewInt)) return 'Price Rating must be between 0-5';
+  if (parseInt(qualityReviewInt) < 0 || parseInt(qualityReviewInt) > 5 || Object.is(NaN, qualityReviewInt)) return 'Quality Rating must be between 0-5';
+  if (parseInt(clenlinessReviewInt) < 0 || parseInt(clenlinessReviewInt) > 5 || Object.is(NaN, clenlinessReviewInt)) return 'Clenliness Rating must be between 0-5';
   return true;
 };
 

@@ -31,10 +31,10 @@ const Review = ({ navigation, route }) => {
   const [error, setError] = useState(null);
   const [imageButtonDisabled, setImageButtonDisabled] = useState(true);
   const [reviewId, setReviewId] = useState('');
+  const [hasImage, setHasImage] = useState(route.params.has_image);
 
   const locationId = route.params.location_id;
   const previousReview = route.params.previous_review;
-  const hasImage = route.params.has_image;
 
   const validateReview = () => {
     const isValid = ReviewValidation(priceRating, qualityRating, clenlisnessRating, reviewBody);
@@ -147,6 +147,10 @@ const Review = ({ navigation, route }) => {
       token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
     } catch (anError) { return; /* Catch for if no token stored. */ }
 
+    // Reset variables so that user can add a new image.
+    setHasImage('');
+    setImageButtonDisabled(false);
+
     fetch(`http://10.0.2.2:3333/api/1.0.0/location/${locationId}/review/${review.review_id}/photo`, {
       method: 'delete',
       headers: {
@@ -157,7 +161,6 @@ const Review = ({ navigation, route }) => {
       .then((res) => {
         if (res.status === 200) {
           ToastAndroid.show('Image Deleted', ToastAndroid.SHORT);
-          setImageButtonDisabled(false);
         }
       })
       .catch(() => {});
@@ -289,7 +292,7 @@ Review.propTypes = {
         clenliness_rating: PropTypes.number,
         review_body: PropTypes.string,
       }).isRequired,
-      has_image: PropTypes.string.isRequired,
+      has_image: PropTypes.string,
     }),
   }).isRequired,
 };

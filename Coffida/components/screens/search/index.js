@@ -116,6 +116,10 @@ const Search = ({ navigation }) => {
     }
   };
 
+  const showMap = () => {
+    navigation.navigate('Map', { locations: queriedLocations });
+  };
+
   useEffect(() => {
     setHasNotch(StatusBar.currentHeight);
   }, []);
@@ -148,7 +152,11 @@ const Search = ({ navigation }) => {
         />
       )}
 
-      <SearchOptions setShowFilter={setShowFilter} sortByLocationFunction={getNearbyLocations} />
+      <SearchOptions
+        setShowFilter={setShowFilter}
+        sortByLocationFunction={getNearbyLocations}
+        showMap={showMap}
+      />
       <FilterModal
         showFilter={[showFilter, setShowFilter]}
         overallRating={[overallRatingSearch, setOverallRatingSearch]}
@@ -163,7 +171,9 @@ const Search = ({ navigation }) => {
 };
 
 Search.propTypes = {
-  navigation: PropTypes.shape({}).isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default Search;
