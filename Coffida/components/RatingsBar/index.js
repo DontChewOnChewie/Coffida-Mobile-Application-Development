@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import styles from '../../styles';
 
-const colours = ['#882e2e', '#d28738', '#ece16b', '#c8e866', '#94f05c'];
+const colours = ['#882e2e', '#d28738', '#ece16b', '#c8e866', '#94f05c', '#54a423'];
 
 const RatingsBar = ({ title, icon, rating }) => {
   const [colour, setColour] = useState(colours[0]);
@@ -30,11 +30,13 @@ const RatingsBar = ({ title, icon, rating }) => {
         color="#6200ee"
       />
 
-      { (rating >= 0) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
-      { (rating >= 1) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
-      { (rating >= 2) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
-      { (rating >= 3) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
-      { (rating >= 4) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
+      { (rating > 0) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
+      { (rating > 1) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
+      { (rating > 2) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
+      { (rating > 3) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
+      { (rating > 4) ? <View style={[styles.ratingCube, { backgroundColor: colour }]} /> : null}
+
+      <Text style={[styles.ratingTitle, styles.marginL10]}>{`(${rating})`}</Text>
 
     </View>
   );

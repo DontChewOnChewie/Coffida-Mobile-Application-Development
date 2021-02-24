@@ -5,6 +5,7 @@ import {
   TextInput,
   Text,
   RadioButton,
+  Button,
 } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import styles from '../../styles';
@@ -25,6 +26,14 @@ const FilterModal = ({
     setDropDownValue((prevDropDownValue) => newValue === prevDropDownValue ? null : newValue);
     // eslint-disable-next-line no-confusing-arrow
     searchIn[1]((prevSearchIn) => newValue === prevSearchIn ? null : newValue);
+  };
+
+  const clearFilter = () => {
+    overallRating[1]('');
+    overallPriceRating[1]('');
+    overallQualityRating[1]('');
+    overallClenlinessRating[1]('');
+    searchIn[1](null);
   };
 
   return (
@@ -124,7 +133,18 @@ const FilterModal = ({
           </View>
 
         </RadioButton.Group>
+
       </View>
+
+      <Button
+        style={styles.button60}
+        mode="contained"
+        icon="minus-circle"
+        onPress={() => clearFilter()}
+      >
+        Clear Filter
+      </Button>
+
     </Modal>
   );
 };

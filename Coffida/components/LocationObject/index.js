@@ -23,6 +23,7 @@ const LocationObject = ({
   const [favourite, setFavourite] = useState(false);
   const [favouriteIcon, setFavouriteIcon] = useState(UNFAVOURITE_ICON);
   const [locationImage, setLocationImage] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const setUserHasFavourite = async () => {
     let token;
@@ -92,6 +93,7 @@ const LocationObject = ({
   useEffect(() => {
     setUserHasFavourite();
     setCurrentLocationImage();
+    setLoading(false);
   }, []);
 
   return (
@@ -121,12 +123,14 @@ const LocationObject = ({
           </TouchableOpacity>
         )}
       />
-      <Card.Cover
-        accessible
-        accessibilityRole="image"
-        accessibilityLabel={`Image of ${location.location_name} in ${location.location_town}.`}
-        source={{ uri: image !== '' ? image : locationImage }}
-      />
+      { !loading ? (
+        <Card.Cover
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={`Image of ${location.location_name} in ${location.location_town}.`}
+          source={{ uri: image !== '' ? image : locationImage }}
+        />
+      ) : null }
       <Card.Actions style={styles.locationObjectActionsWrapper}>
         { navButton ? (
           <Button

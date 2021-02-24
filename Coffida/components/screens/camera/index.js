@@ -48,7 +48,7 @@ const CameraView = ({ navigation, route }) => {
       .then((res) => {
         if (res.status === 200) {
           ToastAndroid.show('Image Added', ToastAndroid.SHORT);
-          navigation.navigate('Home');
+          navigation.navigate('Location', { id: locationId });
         }
       })
       .catch(() => {});

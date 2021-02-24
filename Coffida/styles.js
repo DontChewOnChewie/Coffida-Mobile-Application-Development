@@ -67,6 +67,12 @@ const styles = StyleSheet.create({
 
   width100: { width: '100%' },
 
+  marginL10: { marginLeft: 10 },
+
+  locationObjectSmallBorder: {
+    borderBottomColor: '#EEEEEE',
+  },
+
   reiviewHeadingWrapper: {
     width: '100%',
     flexDirection: 'row',
@@ -184,6 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '90%',
     marginLeft: 10,
+    marginBottom: 10,
   },
 
   radioButtonWrapper: {
