@@ -160,6 +160,7 @@ const Search = ({ navigation }) => {
     navigation.navigate('Map', { locations: queriedLocations });
   };
 
+  // Handles left/back pagination button, checks if start has been reached.
   const leftArrow = () => {
     setLocationsOffset((prevOffset) => {
       if (prevOffset - locationsLimit >= 0) {
@@ -173,6 +174,7 @@ const Search = ({ navigation }) => {
     });
   };
 
+  // Handles right/forward pagination button, checks if end has been reached.
   const rightArrow = () => {
     setLocationsOffset((prevOffset) => {
       if (prevOffset + parseInt(locationsLimit, 10) < 5) {
