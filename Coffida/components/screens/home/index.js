@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StatusBar } from 'react-native';
+import {
+  View,
+  FlatList,
+  StatusBar,
+  ToastAndroid,
+} from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
+
+// Home Screen
+// Params:
+// navigation = Navigation object.
 
 const Home = ({ navigation }) => {
   const [hasNotch, setHasNotch] = useState(0);
@@ -12,6 +21,7 @@ const Home = ({ navigation }) => {
   const [locations, setLocations] = useState([]);
 
   useEffect(() => {
+    // Get all the coffee shops from database.
     const getShopData = async () => {
       let token;
       try {
@@ -28,7 +38,8 @@ const Home = ({ navigation }) => {
       })
         .then((res) => {
           if (res.status === 200) return res.json();
-          return 'Erorr';
+          ToastAndroid.show('Error getting location data.', ToastAndroid.SHORT);
+          return 'Error';
         })
         .then((data) => {
           if (data !== 'Error') {
@@ -36,7 +47,7 @@ const Home = ({ navigation }) => {
             setLoading(false);
           }
         })
-        .catch(() => {});
+        .catch(() => { ToastAndroid.show('Error getting location data.', ToastAndroid.SHORT); });
     };
 
     getShopData();

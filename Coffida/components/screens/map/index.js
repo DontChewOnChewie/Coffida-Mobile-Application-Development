@@ -4,6 +4,10 @@ import MapView, { Marker } from 'react-native-maps';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
 
+// Map Screen
+// Params:
+// route = Contains all locations to display markers for on the map.
+
 const Map = ({ route }) => {
   const { locations } = route.params;
   return (

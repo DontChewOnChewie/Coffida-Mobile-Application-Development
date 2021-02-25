@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./images/BowkerProductionsLogo.png",
+      "image": "./images/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#c66658"
     },

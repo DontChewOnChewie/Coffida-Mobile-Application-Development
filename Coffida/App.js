@@ -1,14 +1,12 @@
 /* eslint-disable linebreak-style */
 import 'react-native-gesture-handler';
 import * as React from 'react';
-import { LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreenTabs from './components/navigation/HomeScreenTabs';
 import SignUp from './components/screens/signup';
 import Login from './components/screens/login';
 
-LogBox.ignoreAllLogs(true);
 const IntialStack = createStackNavigator();
 
 const App = () => (

@@ -2,7 +2,14 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text, Button } from 'react-native-paper';
 import PropTypes from 'prop-types';
-import styles from '../../styles';
+import styles from '../../../../styles';
+
+// Used in Userctivity to show what location a review is from.
+// Params:
+// navigation = Navigation object passed from parent screen.
+// locationId = Location ID of location review is for.
+// locationName = Location name of location review is for.
+// locationTown = Location town of location review is for.
 
 const LocationObjectSmall = ({
   navigation,

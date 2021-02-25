@@ -1,11 +1,18 @@
 import React from 'react';
-import { View } from 'react-native';
+import { ImageBackground, ToastAndroid } from 'react-native';
 import { Button, Subheading } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
+
+const backgroundImage = require('../../../images/loginBG.jpg');
+
+// Logout Screen
+// Params:
+// navigation : Navigation object.
 
 const Logout = ({ navigation }) => {
+  // Try to log the current user out.
   const tryLogout = async () => {
     let token;
     try {
@@ -22,13 +29,18 @@ const Logout = ({ navigation }) => {
         if (res.status === 200) {
           AsyncStoreHelper.removeCredentials();
           navigation.navigate('Login');
-        }
+        } else ToastAndroid.show('Error logging out.', ToastAndroid.SHORT);
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error logging out.', ToastAndroid.SHORT); });
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      accessible
+      accessibilityLabel="Background image of coffee on table."
+      source={backgroundImage}
+      style={styles.container}
+    >
       <Subheading style={styles.logoutMessage}>
         If you log out you will not be able to leave reviews for any coffee shop.
       </Subheading>
@@ -42,7 +54,7 @@ const Logout = ({ navigation }) => {
       >
         Logout
       </Button>
-    </View>
+    </ImageBackground>
   );
 };
 

@@ -8,7 +8,16 @@ import {
   Button,
 } from 'react-native-paper';
 import PropTypes from 'prop-types';
-import styles from '../../styles';
+import styles from '../../../../styles';
+
+// Used in Search screen to display filter options to user.
+// Params:
+// showFilter = State object determining whether or not this should be displayed.
+// overallRating = State object for setting and getting overall rating.
+// overallPriceRating = State object for setting and getting overall price rating.
+// overallQualityRating = State object for seting and getting overall quality rating.
+// overallClenlinessRating = State object for setting and getting overall clenliness rating.
+// searchIn = State object for determining if to search in users favourites or reviewed locations.
 
 const FilterModal = ({
   showFilter,
@@ -20,6 +29,7 @@ const FilterModal = ({
 }) => {
   const [dropDownValue, setDropDownValue] = useState(null);
 
+  // Handle unselecting of radio buttons.
   // Ignore no ternary rule in style guide for this function as one off.
   const handleRadioButtonChange = (newValue) => {
     // eslint-disable-next-line no-confusing-arrow
@@ -28,11 +38,13 @@ const FilterModal = ({
     searchIn[1]((prevSearchIn) => newValue === prevSearchIn ? null : newValue);
   };
 
+  // Clear filter to be empty.
   const clearFilter = () => {
     overallRating[1]('');
     overallPriceRating[1]('');
     overallQualityRating[1]('');
     overallClenlinessRating[1]('');
+    handleRadioButtonChange(dropDownValue);
     searchIn[1](null);
   };
 

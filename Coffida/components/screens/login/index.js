@@ -3,16 +3,21 @@ import { ImageBackground } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
 
 const backgroundImage = require('../../../images/loginBG.jpg');
+
+// Login Screen
+// Params:
+// navigation = Navigation object.
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
 
+  // Login in with inputted details.
   const tryLogin = async () => {
     fetch('http://192.168.1.135:3333/api/1.0.0/user/login', {
       method: 'post',
@@ -25,7 +30,12 @@ const Login = ({ navigation }) => {
       }),
     })
       .then((res) => {
-        if (res.status === 200) return res.json();
+        if (res.status === 200) {
+          // Reset form fields so values aren't populated on return
+          setEmail('');
+          setPassword('');
+          return res.json();
+        }
         setError('Account credentials are not valid.');
         return 'Error';
       })
@@ -35,7 +45,7 @@ const Login = ({ navigation }) => {
           navigation.navigate('Home', { screen: 'Home' });
         }
       })
-      .catch(() => {});
+      .catch(() => { setError('Something went wrong.'); });
   };
 
   return (
@@ -57,6 +67,7 @@ const Login = ({ navigation }) => {
         label="Account Email"
         style={styles.input60}
         onChangeText={(text) => setEmail(text)}
+        value={email}
       />
 
       <TextInput
@@ -64,6 +75,7 @@ const Login = ({ navigation }) => {
         label="Account Password"
         style={styles.input60}
         onChangeText={(text) => setPassword(text)}
+        value={password}
         secureTextEntry
       />
 

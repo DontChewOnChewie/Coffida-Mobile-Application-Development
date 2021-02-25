@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { ToastAndroid, ImageBackground } from 'react-native';
+import { View, ToastAndroid, ImageBackground } from 'react-native';
 import {
   Button,
   TextInput,
   Text,
   FAB,
+  ActivityIndicator,
 } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
-import { NameValidation, EmailValidation, PasswordValidation } from '../../InputHandler';
+import { NameValidation, EmailValidation, PasswordValidation } from '../../../helpers/InputHandler';
 
 const backgroundImage = require('../../../images/loginBG.jpg');
+
+// User Screen
+// Params:
+// navigation = Navigation object.
 
 const User = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
@@ -24,11 +29,10 @@ const User = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPasswrd] = useState('');
 
-  const [favouriteLocations, setFavouriteLocations] = useState([]);
-  const [reviewedLocations, setReviewedLocations] = useState([]);
-
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // Get signed in users details and populate inputs.
   const getUserDetails = async () => {
     let token;
     let id;
@@ -46,6 +50,7 @@ const User = ({ navigation }) => {
     })
       .then((res) => {
         if (res.status === 200) return res.json();
+        ToastAndroid.show('Error getting your details.', ToastAndroid.SHORT);
         return 'Error';
       })
       .then((data) => {
@@ -56,13 +61,13 @@ const User = ({ navigation }) => {
           setCurrentSecondName(data.last_name);
           setEmail(data.email);
           setCurrentEmail(data.email);
-          setFavouriteLocations(data.favourite_locations);
-          setReviewedLocations(data.reviews);
+          setLoading(false);
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error getting your details.', ToastAndroid.SHORT); });
   };
 
+  // Get users valid account changes and return what hasn't been changed and why.
   const getUserDetailChangesObject = () => {
     const returnObject = {};
     let errors = '';
@@ -77,7 +82,7 @@ const User = ({ navigation }) => {
     if (email !== ''
         && email !== currentEmail
         && EmailValidation(email)) returnObject.email = email;
-    else errors += 'Email was not be changed. If you wanted to change it make sure email is valid or differ.\n';
+    else errors += 'Email was not changed. If you wanted to change it make sure email is valid or different.\n';
 
     if (password !== ''
         && PasswordValidation(password, confirmPassword)) returnObject.password = password;
@@ -88,6 +93,7 @@ const User = ({ navigation }) => {
     return returnObject;
   };
 
+  // Change the user current details with whats been inputted.
   const changeUserDetails = async () => {
     let token;
     let id;
@@ -113,15 +119,23 @@ const User = ({ navigation }) => {
     })
       .then((res) => {
         if (res.status === 200) {
-          ToastAndroid.showWithGravity('Successfully Updated your Account!', ToastAndroid.SHORT, ToastAndroid.CENTER);
+          ToastAndroid.show('Successfully Updated your Account!', ToastAndroid.SHORT);
         }
-      }).catch(() => {});
+      }).catch(() => { ToastAndroid.show('Error updating your details.', ToastAndroid.SHORT); });
   };
 
   useEffect(() => {
     navigation.addListener('focus', () => { getUserDetails(); });
     getUserDetails();
   }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.whiteBackground]}>
+        <ActivityIndicator animating />
+      </View>
+    );
+  }
 
   return (
     <ImageBackground
@@ -193,7 +207,7 @@ const User = ({ navigation }) => {
         accessibilityHint="Navigate to your activity page."
         style={styles.fabBottomRight}
         icon="plus"
-        onPress={() => navigation.navigate('UserActivity', { favourite_locations: favouriteLocations, reviewed_locations: reviewedLocations })}
+        onPress={() => navigation.navigate('UserActivity')}
       />
     </ImageBackground>
   );

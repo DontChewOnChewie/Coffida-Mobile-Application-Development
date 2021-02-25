@@ -10,10 +10,19 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PropTypes from 'prop-types';
 import styles from '../../styles';
-import AsyncStoreHelper from '../AsyncStoreHelper';
+import AsyncStoreHelper from '../../helpers/AsyncStoreHelper';
 
 const LIKE_COLOR = '#6200ee';
 const UNLIKE_COLOR = '#b1b1b1';
+
+// Used in Location and UserActivity screen.
+// Params:
+// review = Review object from database.
+// locationId = Location ID of location review is for.
+// reviewListState = Used to remove review from screen upon review deletion (state object).
+// navigation = Navigation object from parent screen.
+// setGlobalImageURI = Function passed down to change locations image to users uploaded image.
+// showUserEditButtons =  Whether or not to render editing buttons, not shown on UserActivity.
 
 const ReviewObject = ({
   review,
@@ -21,6 +30,7 @@ const ReviewObject = ({
   reviewListState,
   navigation,
   setGlobalImageURI,
+  showUserEditButtons,
 }) => {
   const [liked, setLiked] = useState(false);
   const [iconColour, setIconColour] = useState(UNLIKE_COLOR);
@@ -28,6 +38,7 @@ const ReviewObject = ({
   const [imageURI, setImageURI] = useState(null);
   const [likes, setLikes] = useState(review.likes);
 
+  // Test to see if an image is attached to review.
   const getImage = async () => {
     let token;
     try {
@@ -43,6 +54,7 @@ const ReviewObject = ({
     })
       .then((res) => {
         if (res.status === 200) return res.blob();
+        setImageURI(null);
         return 'Error';
       })
       .then((data) => {
@@ -52,9 +64,10 @@ const ReviewObject = ({
           fs.onload = () => { setImageURI(fs.result); };
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error getting your comment data.', ToastAndroid.SHORT); });
   };
 
+  // Check to see if review is logged in users and if its like status for user.
   const setUserHasLikedCommentAndOwnership = async () => {
     let token;
     let id;
@@ -72,26 +85,30 @@ const ReviewObject = ({
     })
       .then((res) => {
         if (res.status === 200) return res.json();
+        ToastAndroid.show('Error getting your comment data. Here', ToastAndroid.SHORT);
         return 'Error';
       })
       .then((data) => {
-        const likedReviews = data.liked_reviews;
-        const isLiked = (
-          likedReviews.filter((like) => like.review.review_id === review.review_id).length)
-            > 0;
-        if (isLiked) setIconColour(LIKE_COLOR);
-        else setIconColour(UNLIKE_COLOR);
-        setLiked(isLiked);
+        if (data !== 'Error') {
+          const likedReviews = data.liked_reviews;
+          const isLiked = (
+            likedReviews.filter((like) => like.review.review_id === review.review_id).length)
+              > 0;
+          if (isLiked) setIconColour(LIKE_COLOR);
+          else setIconColour(UNLIKE_COLOR);
+          setLiked(isLiked);
 
-        const { reviews } = data;
-        const isUsersReview = (
-          reviews.filter((rev) => rev.review.review_id === review.review_id)
-            .length) > 0;
-        setIsUsers(isUsersReview);
+          const { reviews } = data;
+          const isUsersReview = (
+            reviews.filter((rev) => rev.review.review_id === review.review_id)
+              .length) > 0;
+          setIsUsers(isUsersReview);
+        }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error getting your comment data.', ToastAndroid.SHORT); });
   };
 
+  // Add or remove a like based on current status.
   const handleLikeButtonClick = async () => {
     let token;
     try {
@@ -115,12 +132,13 @@ const ReviewObject = ({
             setLikes((prevLikes) => prevLikes + 1);
           }
           setLiked((prevLiked) => !prevLiked);
-          ToastAndroid.showWithGravity(liked ? 'Removed Like' : 'Added Like', ToastAndroid.SHORT, ToastAndroid.CENTER);
-        }
+          ToastAndroid.show(liked ? 'Removed Like' : 'Added Like', ToastAndroid.SHORT);
+        } else ToastAndroid.show('Error setting like status.', ToastAndroid.SHORT);
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error setting like status.', ToastAndroid.SHORT); });
   };
 
+  // Delete this review and remove from screen.
   const handleDeleteReviewButtonClick = async () => {
     let token;
     try {
@@ -136,13 +154,15 @@ const ReviewObject = ({
     })
       .then((res) => {
         if (res.status === 200) {
-          reviewListState[1](
-            (prevReviews) => prevReviews.filter((rev) => rev.review_id !== review.review_id),
+          const oldReviews = reviewListState[0];
+          const newReviews = oldReviews.filter(
+            (rev) => rev.review_id !== review.review_id,
           );
-          ToastAndroid.showWithGravity('Removed Review', ToastAndroid.SHORT, ToastAndroid.CENTER);
-        }
+          reviewListState[1](newReviews);
+          ToastAndroid.show('Removed Review', ToastAndroid.SHORT);
+        } else ToastAndroid.show('Error deleting review.', ToastAndroid.SHORT);
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error deleting review.', ToastAndroid.SHORT); });
   };
 
   useEffect(() => {
@@ -190,71 +210,74 @@ const ReviewObject = ({
 
       </Card.Actions>
 
-      <Card.Actions
-        accessible
-        accessibilityLabel="Container for editing your created reviews."
-      >
-        <View style={styles.reviewObjectUserEditActionsWrapper}>
-          { isUsers ? (
-            <View style={styles.flexDirectionRow}>
-              <TouchableOpacity
-                accessible
-                accessibilityRole="button"
-                accessibilityHint={`Navigate to edit page for review ${review.review_id}.`}
-                onPress={() => navigation.navigate('Review', { location_id: locationId, previous_review: review, has_image: imageURI })}
-                style={styles.flexDirectionRow}
-              >
-                <Icon
-                  accessible
-                  accessibilityRole="image"
-                  accessibilityLabel={`Icon to edit review ${review.review_id} button.`}
-                  name="edit"
-                  size={25}
-                  color={LIKE_COLOR}
-                />
-                <Paragraph>Edit</Paragraph>
-              </TouchableOpacity>
+      {showUserEditButtons ? (
+        <Card.Actions
+          accessible
+          accessibilityLabel="Container for editing your created reviews."
+        >
 
+          <View style={styles.reviewObjectUserEditActionsWrapper}>
+            { isUsers ? (
+              <View style={styles.flexDirectionRow}>
+                <TouchableOpacity
+                  accessible
+                  accessibilityRole="button"
+                  accessibilityHint={`Navigate to edit page for review ${review.review_id}.`}
+                  onPress={() => navigation.navigate('Review', { location_id: locationId, previous_review: review, has_image: imageURI })}
+                  style={styles.flexDirectionRow}
+                >
+                  <Icon
+                    accessible
+                    accessibilityRole="image"
+                    accessibilityLabel={`Icon to edit review ${review.review_id} button.`}
+                    name="edit"
+                    size={25}
+                    color={LIKE_COLOR}
+                  />
+                  <Paragraph>Edit</Paragraph>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  accessible
+                  accessibilityRole="button"
+                  accessibilityHint={`Delete review ${review.review_id}.`}
+                  onPress={() => handleDeleteReviewButtonClick()}
+                  style={styles.userControlButton}
+                >
+                  <Icon
+                    accessible
+                    accessibilityRole="image"
+                    accessibilityLabel={`Icon for deleting review ${review.review_id} button.`}
+                    name="trash"
+                    size={25}
+                    color="#dd5050"
+                  />
+                  <Paragraph>Delete</Paragraph>
+                </TouchableOpacity>
+              </View>
+            ) : null}
+            { imageURI != null ? (
               <TouchableOpacity
                 accessible
                 accessibilityRole="button"
-                accessibilityHint={`Delete review ${review.review_id}.`}
-                onPress={() => handleDeleteReviewButtonClick()}
+                accessibilityHint={`View image for review ${review.review_id}.`}
+                onPress={() => setGlobalImageURI(imageURI)}
                 style={styles.userControlButton}
               >
                 <Icon
                   accessible
                   accessibilityRole="image"
-                  accessibilityLabel={`Icon for deleting review ${review.review_id} button.`}
-                  name="trash"
+                  accessibilityLabel={`Icon for showing review ${review.review_id} button.`}
+                  name="image"
                   size={25}
-                  color="#dd5050"
+                  color={LIKE_COLOR}
                 />
-                <Paragraph>Delete</Paragraph>
+                <Paragraph>View Image</Paragraph>
               </TouchableOpacity>
-            </View>
-          ) : null}
-          { imageURI != null ? (
-            <TouchableOpacity
-              accessible
-              accessibilityRole="button"
-              accessibilityHint={`View image for review ${review.review_id}.`}
-              onPress={() => setGlobalImageURI(imageURI)}
-              style={styles.userControlButton}
-            >
-              <Icon
-                accessible
-                accessibilityRole="image"
-                accessibilityLabel={`Icon for showing review ${review.review_id} button.`}
-                name="image"
-                size={25}
-                color={LIKE_COLOR}
-              />
-              <Paragraph>View Image</Paragraph>
-            </TouchableOpacity>
-          ) : null}
-        </View>
-      </Card.Actions>
+            ) : null}
+          </View>
+        </Card.Actions>
+      ) : null }
 
       <Divider style={styles.divider} />
 
@@ -274,6 +297,7 @@ ReviewObject.propTypes = {
     navigate: PropTypes.func,
   }).isRequired,
   setGlobalImageURI: PropTypes.func.isRequired,
+  showUserEditButtons: PropTypes.bool.isRequired,
 };
 
 export default ReviewObject;

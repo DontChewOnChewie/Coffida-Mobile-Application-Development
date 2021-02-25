@@ -5,11 +5,15 @@ import {
 } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
-import { UserValidation } from '../../InputHandler';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
+import { UserValidation } from '../../../helpers/InputHandler';
 import ErrorPopUp from '../../ErrorPopUp';
 
 const backgroundImage = require('../../../images/loginBG.jpg');
+
+// Signup Screen
+// Params:
+// navigation = Navigation object.
 
 const SignUp = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
@@ -21,8 +25,10 @@ const SignUp = ({ navigation }) => {
 
   const [loading, setLoading] = useState(true);
 
+  // Make sure user has inputted valid credentials.
   const validateSignUp = () => {
     const isValid = UserValidation(firstName, secondName, email, password, confirmPassword);
+    // UserValidation returns either string (error message) or boolean value true (on success).
     if (typeof (isValid) !== 'boolean') {
       setError(isValid);
       return false;
@@ -31,6 +37,7 @@ const SignUp = ({ navigation }) => {
     return true;
   };
 
+  // Try and sign up a new user with given credentials.
   const attemptSignUp = async () => {
     if (!validateSignUp()) return;
 
@@ -48,15 +55,24 @@ const SignUp = ({ navigation }) => {
     })
       .then((res) => {
         if (res.status === 201) {
+          // Reset form fields so values aren't populated on return
+          setFirstName('');
+          setSecondName('');
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
           return res.json();
-        } return 'Error';
+        }
+        if (res.status === 400) setError('User with same name email already exists');
+        return 'Error';
       })
       .then((data) => {
         if (data !== 'Error') navigation.navigate('Login');
       })
-      .catch(() => { });
+      .catch(() => { setError('Error signing you up.'); });
   };
 
+  // Check if user has credentials already, navigate to home if they do.
   const getCredentials = async () => {
     const creds = await AsyncStoreHelper.getCredentials();
     if (creds != null) navigation.navigate('Home');
@@ -97,6 +113,7 @@ const SignUp = ({ navigation }) => {
         label="First Name"
         style={styles.input60}
         onChangeText={(text) => setFirstName(text)}
+        value={firstName}
       />
 
       <TextInput
@@ -104,6 +121,7 @@ const SignUp = ({ navigation }) => {
         label="Second Name"
         style={styles.input60}
         onChangeText={(text) => setSecondName(text)}
+        value={secondName}
       />
 
       <TextInput
@@ -111,6 +129,7 @@ const SignUp = ({ navigation }) => {
         label="Email"
         style={styles.input60}
         onChangeText={(text) => setEmail(text)}
+        value={email}
       />
 
       <TextInput
@@ -118,6 +137,7 @@ const SignUp = ({ navigation }) => {
         label="Password"
         style={styles.input60}
         onChangeText={(text) => setPassword(text)}
+        value={password}
         secureTextEntry
       />
 
@@ -127,6 +147,7 @@ const SignUp = ({ navigation }) => {
         label="Confirm Password"
         style={styles.input60}
         onChangeText={(text) => setConfirmPassword(text)}
+        value={confirmPassword}
         secureTextEntry
       />
 

@@ -3,6 +3,12 @@ import { Banner, Text } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import styles from '../../styles';
 
+// Used on all form input pages to show errors.
+// Params:
+// errorMessage = Error message to display.
+// errorStateFunction = Function to call on message close, usually state object function
+//                      stopping the rendering of the error.
+
 const ErrorPopUp = ({ errorMessage, errorStateFunction }) => (
   <Banner
     style={styles.bannerContainer}

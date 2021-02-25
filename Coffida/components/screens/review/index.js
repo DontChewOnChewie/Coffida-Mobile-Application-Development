@@ -16,11 +16,19 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
 import ErrorPopUp from '../../ErrorPopUp';
-import { ReviewValidation } from '../../InputHandler';
+import { ReviewValidation } from '../../../helpers/InputHandler';
 
 const backgroundImage = require('../../../images/loginBG.jpg');
+
+// Add/Edit Review Screen
+// Params:
+// naviagtion = Navigation object.
+// route = Contains:
+//            location_id = Location ID of loction review is for.
+//            previous_review = Previous review details if the user is updating a review.
+//            has_image = Whether or not the review has an image attached to it.
 
 const Review = ({ navigation, route }) => {
   const [priceRating, setPriceRating] = useState('');
@@ -36,6 +44,7 @@ const Review = ({ navigation, route }) => {
   const locationId = route.params.location_id;
   const previousReview = route.params.previous_review;
 
+  // Make sure a review has valid inputs.
   const validateReview = () => {
     const isValid = ReviewValidation(priceRating, qualityRating, clenlisnessRating, reviewBody);
     if (typeof (isValid) !== 'boolean') {
@@ -46,6 +55,7 @@ const Review = ({ navigation, route }) => {
     return true;
   };
 
+  // Get a newly uploaded review so an image can be added.
   const getNewReviewId = async () => {
     let token;
     let id;
@@ -63,6 +73,7 @@ const Review = ({ navigation, route }) => {
     })
       .then((res) => {
         if (res.status === 200) return res.json();
+        ToastAndroid.show('Error getting new review.', ToastAndroid.SHORT);
         return 'Error';
       })
       .then((data) => {
@@ -71,9 +82,10 @@ const Review = ({ navigation, route }) => {
           setReviewId(lastReview.review.review_id);
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error getting new review.', ToastAndroid.SHORT); });
   };
 
+  // Submit a brand new review.
   const submitReview = async () => {
     if (!validateReview()) return;
 
@@ -101,14 +113,15 @@ const Review = ({ navigation, route }) => {
     })
       .then(async (res) => {
         if (res.status === 201) {
-          ToastAndroid.showWithGravity('Review Added', ToastAndroid.SHORT, ToastAndroid.CENTER);
+          ToastAndroid.show('Review Added', ToastAndroid.SHORT);
           await getNewReviewId();
           setImageButtonDisabled(false);
-        }
+        } else ToastAndroid.show('Error adding new review.', ToastAndroid.SHORT);
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error adding new review.', ToastAndroid.SHORT); });
   };
 
+  // Update an existing review with new valid details.
   const updateReview = async () => {
     if (!validateReview()) return;
 
@@ -136,11 +149,12 @@ const Review = ({ navigation, route }) => {
       .then((res) => {
         if (res.status === 200) {
           ToastAndroid.showWithGravity('Review Updated', ToastAndroid.SHORT, ToastAndroid.CENTER);
-        }
+        } else ToastAndroid.show('Error updating new review.', ToastAndroid.SHORT);
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error updating new review.', ToastAndroid.SHORT); });
   };
 
+  // Delete and image that is attached to a review.
   const deleteImage = async () => {
     let token;
     try {
@@ -163,9 +177,10 @@ const Review = ({ navigation, route }) => {
           ToastAndroid.show('Image Deleted', ToastAndroid.SHORT);
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error removing image,', ToastAndroid.SHORT); });
   };
 
+  // Check if user is editing a review and set inputs to values if they are.
   useEffect(() => {
     if (Object.keys(previousReview).length !== 0) {
       setReviewId(previousReview.review_id);

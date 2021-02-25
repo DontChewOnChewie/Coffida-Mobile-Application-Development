@@ -5,14 +5,22 @@ import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-unresolved
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../../styles';
-import AsyncStoreHelper from '../AsyncStoreHelper';
-import RatingsBar from '../RatingsBar';
+import AsyncStoreHelper from '../../helpers/AsyncStoreHelper';
+import RatingsBar from './RatingsBar';
 
 const DUMMY_IMG_PATH = 'http://cdn.dummyphoto.com';
 const DEFAULT_IMG_PATH = 'http://innovate.bunzlcatering.co.uk/wp-content/uploads/2015/06/coffee-shop-1.jpg';
 const FAVOURITE_ICON = 'star';
 const UNFAVOURITE_ICON = 'star-o';
 const FAVOURITE_COLOUR = '#6200ee';
+
+// Used on Location, UserAcitvity, Search and Home screen.
+// Displays and retrieves information for location and users activity on the location.
+// Params:
+// location = Location object retrieved from database.
+// navButton = Whether or not a navButton should be rendered.
+// navigation = Navigation object from parent screen.
+// image = Whether or not a user uploaded image should be rendered.
 
 const LocationObject = ({
   location,
@@ -25,6 +33,7 @@ const LocationObject = ({
   const [locationImage, setLocationImage] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Determines whether user has this location as a favourite.
   const setUserHasFavourite = async () => {
     let token;
     let id;
@@ -42,6 +51,7 @@ const LocationObject = ({
     })
       .then((res) => {
         if (res.status === 200) return res.json();
+        ToastAndroid.show('Error getting your favourites.', ToastAndroid.SHORT);
         return 'Error';
       })
       .then((data) => {
@@ -55,9 +65,10 @@ const LocationObject = ({
           setFavourite(isFavourite);
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error getting your favourites.', ToastAndroid.SHORT); });
   };
 
+  // Deletes or adds favourite dependant on current status.
   const handleFavouriteButtonClick = async () => {
     let token;
     try {
@@ -76,12 +87,13 @@ const LocationObject = ({
           if (favourite) setFavouriteIcon(UNFAVOURITE_ICON);
           else setFavouriteIcon(FAVOURITE_ICON);
           setFavourite((prevFavourite) => !prevFavourite);
-          ToastAndroid.showWithGravity(favourite ? 'Removed from Favourite' : 'Added to Favourites', ToastAndroid.SHORT, ToastAndroid.CENTER);
-        }
+          ToastAndroid.show(favourite ? 'Removed from Favourite' : 'Added to Favourites', ToastAndroid.SHORT);
+        } else ToastAndroid.show(favourite ? 'Removed from Favourite' : 'Added to Favourites', ToastAndroid.SHORT);
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error setting favourite.', ToastAndroid.SHORT); });
   };
 
+  // Sets the currrent image to Default placholder image if database url is not valid.
   const setCurrentLocationImage = () => {
     if (location.photo_path === DUMMY_IMG_PATH
             || location.photo_path === ''
@@ -147,9 +159,21 @@ const LocationObject = ({
             accessibilityLabel={`Ratings container for ${location.location_name} in ${location.location_town}.`}
             style={styles.width100}
           >
-            <RatingsBar title="Price Rating" icon="attach-money" rating={location.avg_price_rating} />
-            <RatingsBar title="Quality Rating" icon="star-rate" rating={location.avg_quality_rating} />
-            <RatingsBar title="Clenliness Rating" icon="cleaning-services" rating={location.avg_clenliness_rating} />
+            <RatingsBar
+              title="Price Rating"
+              icon="attach-money"
+              rating={location.avg_price_rating != null ? location.avg_price_rating : 0}
+            />
+            <RatingsBar
+              title="Quality Rating"
+              icon="star-rate"
+              rating={location.avg_quality_rating != null ? location.avg_quality_rating : 0}
+            />
+            <RatingsBar
+              title="Clenliness Rating"
+              icon="cleaning-services"
+              rating={location.avg_clenliness_rating != null ? location.avg_clenliness_rating : 0}
+            />
           </View>
         )}
       </Card.Actions>

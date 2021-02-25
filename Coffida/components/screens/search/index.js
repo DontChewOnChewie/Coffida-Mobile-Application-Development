@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, StatusBar, FlatList } from 'react-native';
+import {
+  View,
+  StatusBar,
+  FlatList,
+  ToastAndroid,
+} from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
 import LocationObject from '../../LocationObject';
-import SearchOptions from '../../SearchOptions';
-import FilterModal from '../../FilterModal';
+import SearchOptions from './SearchOptions';
+import FilterModal from './FilterModal';
+
+// Search Screen
+// Params:
+// navigation = Navigation object.
 
 const Search = ({ navigation }) => {
   const [hasNotch, setHasNotch] = useState(0);
@@ -26,6 +35,7 @@ const Search = ({ navigation }) => {
 
   const [userLocation, setUserLocation] = useState(null);
 
+  // Create an API address matching the users search filters.
   const createSearchAddress = () => {
     let searchAdrress = `http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}`;
     if (overallRatingSearch !== '') searchAdrress += `&overall_rating=${overallRatingSearch}`;
@@ -36,6 +46,7 @@ const Search = ({ navigation }) => {
     return searchAdrress;
   };
 
+  // Do a search based on inputted fitlers.
   const doSearch = async () => {
     setLoading(true);
     let token;
@@ -54,6 +65,7 @@ const Search = ({ navigation }) => {
     })
       .then((res) => {
         if (res.status === 200) return res.json();
+        ToastAndroid.show('Error completeing search.', ToastAndroid.SHORT);
         return 'Error';
       })
       .then((data) => {
@@ -62,9 +74,11 @@ const Search = ({ navigation }) => {
           setLoading(false);
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error completeing search.', ToastAndroid.SHORT); });
   };
 
+  // Sort all locations and order them to the ones closet to the user.
+  // Does this by first adding a new distanceValue field to all location objects.
   const sortLocationsByNearest = (locations) => {
     const sortedArray = locations.map((location) => ({
       ...location,
@@ -77,6 +91,7 @@ const Search = ({ navigation }) => {
     setQueriedLocations(sortedArray);
   };
 
+  // Api call to get all locations to be sorted in sortLocationsByNearest().
   const getNearbyLocationsFetch = async () => {
     if (userLocation == null) return;
 
@@ -96,6 +111,7 @@ const Search = ({ navigation }) => {
     })
       .then((res) => {
         if (res.status === 200) return res.json();
+        ToastAndroid.show('Error getting nearby locations.', ToastAndroid.SHORT);
         return 'Error';
       })
       .then((data) => {
@@ -104,9 +120,10 @@ const Search = ({ navigation }) => {
           setLoading(false);
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error getting nearby locations.', ToastAndroid.SHORT); });
   };
 
+  // Gets and sets users location and shows what locations are closest.
   const getNearbyLocations = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status === 'granted') {
@@ -116,6 +133,7 @@ const Search = ({ navigation }) => {
     }
   };
 
+  // Navigate to map screen.
   const showMap = () => {
     navigation.navigate('Map', { locations: queriedLocations });
   };

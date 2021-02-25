@@ -1,20 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, ToastAndroid } from 'react-native';
 import { Button } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import LocationObject from '../../LocationObject';
-import LocationObjectSmall from '../../LocationObjectSmall';
+import LocationObjectSmall from './LocationObjectSmall';
 import ReviewObject from '../../ReviewObject';
 import styles from '../../../styles';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
 
-const UserActivity = ({ navigation, route }) => {
+// UserActivity Screen
+// Params:
+// navigation = Navigation object.
+
+const UserActivity = ({ navigation }) => {
   const [favouriteLocations, setFavouriteLocations] = useState([]);
   const [reviewedLocations, setReviewedLocations] = useState([]);
   const [currentView, setCurrentView] = useState('Favourites');
 
+  // Get currently signed in user details.
+  const getUserDetails = async () => {
+    let token;
+    let id;
+    try {
+      token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
+      id = JSON.parse(await AsyncStoreHelper.getCredentials()).id;
+    } catch (anError) { return; /* Catch for if no token stored. */ }
+
+    fetch(`http://10.0.2.2:3333/api/1.0.0/user/${id}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': token,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        ToastAndroid.show('Error getting your details', ToastAndroid.SHORT);
+        return 'Error';
+      })
+      .then((data) => {
+        if (data !== 'Error') {
+          setFavouriteLocations(data.favourite_locations);
+          setReviewedLocations(data.reviews);
+        }
+      })
+      .catch(() => { ToastAndroid.show('Error getting your details', ToastAndroid.SHORT); });
+  };
+
   useEffect(() => {
-    setFavouriteLocations(route.params.favourite_locations);
-    setReviewedLocations(route.params.reviewed_locations);
+    navigation.addListener('focus', () => { getUserDetails(); });
+    getUserDetails();
   }, []);
 
   return (
@@ -54,6 +89,7 @@ const UserActivity = ({ navigation, route }) => {
                 reviewListState={[reviewedLocations, setReviewedLocations]}
                 navigation={navigation}
                 setGlobalImageURI={() => {}}
+                showUserEditButtons={false}
               />
             </View>
           )}
@@ -84,12 +120,8 @@ const UserActivity = ({ navigation, route }) => {
 };
 
 UserActivity.propTypes = {
-  navigation: PropTypes.shape({}).isRequired,
-  route: PropTypes.shape({
-    params: PropTypes.shape({
-      favourite_locations: PropTypes.arrayOf(PropTypes.any),
-      reviewed_locations: PropTypes.arrayOf(PropTypes.any),
-    }),
+  navigation: PropTypes.shape({
+    addListener: PropTypes.func.isRequired,
   }).isRequired,
 };
 

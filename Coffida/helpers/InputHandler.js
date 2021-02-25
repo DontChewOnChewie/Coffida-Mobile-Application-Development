@@ -1,14 +1,18 @@
 /* eslint-disable radix */
 /*  Everything to do with user input validation. */
+
+// Check if both name input legnths are greater than 2.
 // eslint-disable-next-line max-len
 export const NameValidation = (firstName, secondName) => (firstName.length > 2 && secondName.length > 2);
 
+// Check if email is of valid format.
 // Taken from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 export const EmailValidation = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 };
 
+// Check passwords match,  has a length greater than 5, have a number in and a symbol in.
 export const PasswordValidation = (password, confirmPassword) => {
   if (password !== confirmPassword) return false;
   if (password.length < 5) return false;
@@ -24,8 +28,9 @@ export const PasswordValidation = (password, confirmPassword) => {
   return false;
 };
 
+// Call all user validation functions.
 export const UserValidation = (firstName, secondName, email, password, confirmPassword) => {
-  if (!NameValidation(firstName, secondName)) return 'Both First and Last Name fields must be longer then 2.';
+  if (!NameValidation(firstName, secondName)) return 'Both First and Last Name fields must be longer than 2.';
   if (!EmailValidation(email)) return 'Email is not valid.';
   if (!PasswordValidation(password, confirmPassword)) return "Password either don't match or do not contain at least on character and number.";
   return true;
@@ -33,6 +38,7 @@ export const UserValidation = (firstName, secondName, email, password, confirmPa
 
 const bannedWords = ['tea', 'cakes', 'pastries', 'food', 'sandwiches'];
 
+// Check inputted review numbers are valid.
 const RatingValidation = (priceReview, qualityReview, clenlinessReview) => {
   if (priceReview === '' || qualityReview === '' || clenlinessReview === '') return 'Please make sure to leave a rating for each category.';
   const priceReviewInt = parseInt(priceReview);
@@ -59,6 +65,7 @@ const ProfanityFilter = (reviewBody) => {
   return returnValue;
 };
 
+// Call all rating validation functions.
 export const ReviewValidation = (priceReview, qualityReview, clenlinessReview, reviewBody) => {
   const ratingsValid = RatingValidation(priceReview, qualityReview, clenlinessReview);
   if (typeof (ratingsValid) !== 'boolean') return ratingsValid;

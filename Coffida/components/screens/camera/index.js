@@ -5,7 +5,12 @@ import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import PropTypes from 'prop-types';
 import styles from '../../../styles';
-import AsyncStoreHelper from '../../AsyncStoreHelper';
+import AsyncStoreHelper from '../../../helpers/AsyncStoreHelper';
+
+// Camera Screen
+// Params:
+// navigation = Navigation object.
+// route = Contains location ID and review ID image will be associated with.
 
 const CameraView = ({ navigation, route }) => {
   const [imageURI, setImageURI] = useState(null);
@@ -13,6 +18,7 @@ const CameraView = ({ navigation, route }) => {
   const locationId = route.params.location_id;
   const reviewId = route.params.review_id;
 
+  // Load up camera and take picture to upload.
   const takePicture = async () => {
     await Permissions.askAsync(Permissions.CAMERA);
     const data = await ImagePicker.launchCameraAsync({
@@ -26,6 +32,7 @@ const CameraView = ({ navigation, route }) => {
     }
   };
 
+  // Upload taken image to the server if an image has been taken.
   const saveImage = async () => {
     if (imageData == null) {
       ToastAndroid.show('Take a Picture First', ToastAndroid.SHORT);
@@ -49,9 +56,9 @@ const CameraView = ({ navigation, route }) => {
         if (res.status === 200) {
           ToastAndroid.show('Image Added', ToastAndroid.SHORT);
           navigation.navigate('Location', { id: locationId });
-        }
+        } else ToastAndroid.show('Error saving image.', ToastAndroid.SHORT);
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error saving image.', ToastAndroid.SHORT); });
   };
 
   return (

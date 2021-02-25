@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, ToastAndroid } from 'react-native';
 import {
   Button,
   Subheading,
@@ -10,6 +10,11 @@ import styles from '../../../styles';
 import LocationObject from '../../LocationObject';
 import ReviewObject from '../../ReviewObject';
 
+// Location Screen
+// Params:
+// navigation = Navigation object.
+// route = Contains location ID of location.
+
 const Location = ({ navigation, route }) => {
   const [location, setLocation] = useState('');
   const [reviews, setReviews] = useState([]);
@@ -17,6 +22,7 @@ const Location = ({ navigation, route }) => {
   const [imageURI, setImageURI] = useState('');
   const locationId = route.params.id;
 
+  // Get the locations details based on passed in ID.
   const getLocationDetails = async () => {
     await fetch(`http://10.0.2.2:3333/api/1.0.0/location/${locationId}`, {
       method: 'get',
@@ -26,6 +32,7 @@ const Location = ({ navigation, route }) => {
     })
       .then((res) => {
         if (res.status === 200) return res.json();
+        ToastAndroid.show('Error getting location details.', ToastAndroid.SHORT);
         return 'Error';
       })
       .then((data) => {
@@ -35,7 +42,7 @@ const Location = ({ navigation, route }) => {
           setLoading(false);
         }
       })
-      .catch(() => {});
+      .catch(() => { ToastAndroid.show('Error getting location details.', ToastAndroid.SHORT); });
   };
 
   useEffect(() => {
@@ -102,6 +109,7 @@ const Location = ({ navigation, route }) => {
             reviewListState={[reviews, setReviews]}
             navigation={navigation}
             setGlobalImageURI={setImageURI}
+            showUserEditButtons
           />
         )}
       />
