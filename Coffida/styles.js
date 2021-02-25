@@ -212,6 +212,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  paginationWrapper: {
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    width: '100%',
+    backgroundColor: 'white',
+  },
+
 });
 
 export default styles;

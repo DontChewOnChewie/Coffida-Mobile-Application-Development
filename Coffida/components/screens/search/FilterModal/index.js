@@ -18,6 +18,9 @@ import styles from '../../../../styles';
 // overallQualityRating = State object for seting and getting overall quality rating.
 // overallClenlinessRating = State object for setting and getting overall clenliness rating.
 // searchIn = State object for determining if to search in users favourites or reviewed locations.
+// locationsLimit = State object to limit number of locations per page.
+// locationsOffset = State object to manage page user is on.
+// page = State object used to reset the page number.
 
 const FilterModal = ({
   showFilter,
@@ -26,6 +29,9 @@ const FilterModal = ({
   overallQualityRating,
   overallClenlinessRating,
   searchIn,
+  locationsLimit,
+  locationsOffset,
+  page,
 }) => {
   const [dropDownValue, setDropDownValue] = useState(null);
 
@@ -46,6 +52,8 @@ const FilterModal = ({
     overallClenlinessRating[1]('');
     handleRadioButtonChange(dropDownValue);
     searchIn[1](null);
+    locationsLimit[1](5);
+    locationsOffset[1](0);
   };
 
   return (
@@ -114,6 +122,24 @@ const FilterModal = ({
       </View>
 
       <View style={styles.filterInputWrapper}>
+        <Text style={styles.boldedWhiteText}>Location Limit</Text>
+        <TextInput
+          accessibilityLabel="Form input limiting number of locations per page."
+          accessibilityValue={{ min: 0, max: 0, now: locationsLimit[0] }}
+          style={styles.input60}
+          label="Loctions limit per page"
+          onChangeText={(text) => {
+            locationsOffset[1](0);
+            page[1](1);
+            return locationsLimit[1](text);
+          }}
+          keyboardType="number-pad"
+          maxLength={1}
+          value={locationsLimit[0].toString()}
+        />
+      </View>
+
+      <View style={styles.filterInputWrapper}>
         <RadioButton.Group
           accessibilityRole="radiogroup"
           onValueChange={(newValue) => handleRadioButtonChange(newValue)}
@@ -168,6 +194,9 @@ FilterModal.propTypes = {
   overallQualityRating: PropTypes.arrayOf(PropTypes.any).isRequired,
   overallClenlinessRating: PropTypes.arrayOf(PropTypes.any).isRequired,
   searchIn: PropTypes.arrayOf(PropTypes.any).isRequired,
+  locationsLimit: PropTypes.arrayOf(PropTypes.any).isRequired,
+  locationsOffset: PropTypes.arrayOf(PropTypes.any).isRequired,
+  page: PropTypes.arrayOf(PropTypes.any).isRequired,
 };
 
 export default FilterModal;

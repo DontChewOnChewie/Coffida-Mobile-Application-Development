@@ -5,7 +5,12 @@ import {
   FlatList,
   ToastAndroid,
 } from 'react-native';
-import { Searchbar, ActivityIndicator } from 'react-native-paper';
+import {
+  Searchbar,
+  ActivityIndicator,
+  Button,
+  Text,
+} from 'react-native-paper';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
@@ -30,14 +35,19 @@ const Search = ({ navigation }) => {
   const [overallClenlinessRatingSearch, setOverallClenlinessRatingSearch] = useState('');
   const [searchIn, setSearchIn] = useState(null);
 
+  const [locationsLimit, setLocationsLimit] = useState(5);
+  const [locationsOffset, setLocationsOffset] = useState(0);
+  const [endOfPaging, setEndOfPaging] = useState(false);
+  const [page, setPage] = useState(1);
+
   const [loading, setLoading] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
 
   const [userLocation, setUserLocation] = useState(null);
 
   // Create an API address matching the users search filters.
-  const createSearchAddress = () => {
-    let searchAdrress = `http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}`;
+  const createSearchAddress = (newOffset) => {
+    let searchAdrress = `http://10.0.2.2:3333/api/1.0.0/find?q=${searchQuery}&limit=${locationsLimit}&offset=${newOffset}`;
     if (overallRatingSearch !== '') searchAdrress += `&overall_rating=${overallRatingSearch}`;
     if (overallPriceRatingSearch !== '') searchAdrress += `&price_rating=${overallPriceRatingSearch}`;
     if (overallQualityRatingSearch !== '') searchAdrress += `&quality_rating=${overallQualityRatingSearch}`;
@@ -47,14 +57,22 @@ const Search = ({ navigation }) => {
   };
 
   // Do a search based on inputted fitlers.
-  const doSearch = async () => {
-    setLoading(true);
+  const doSearch = async (newOffset) => {
+    if (Object.is(NaN, parseInt(locationsLimit, 10))) {
+      ToastAndroid.show('Please enter a number in the locations limit filter option.', ToastAndroid.LONG);
+      setLocationsOffset(0);
+      setLocationsLimit(5);
+      return;
+    }
+
     let token;
     try {
       token = JSON.parse(await AsyncStoreHelper.getCredentials()).token;
     } catch (error) { return; /* Catch for if no token stored. */ }
 
-    const address = createSearchAddress();
+    setLoading(true);
+
+    const address = createSearchAddress(newOffset);
 
     fetch(address, {
       method: 'get',
@@ -70,7 +88,11 @@ const Search = ({ navigation }) => {
       })
       .then((data) => {
         if (data !== 'Error') {
-          setQueriedLocations(data);
+          if (data.length > 0) setQueriedLocations(data);
+          else {
+            setEndOfPaging(true);
+            if (!endOfPaging) setPage((prevPage) => prevPage - 1);
+          }
           setLoading(false);
         }
       })
@@ -138,7 +160,33 @@ const Search = ({ navigation }) => {
     navigation.navigate('Map', { locations: queriedLocations });
   };
 
+  const leftArrow = () => {
+    setLocationsOffset((prevOffset) => {
+      if (prevOffset - locationsLimit >= 0) {
+        doSearch(prevOffset - locationsLimit);
+        setPage((previousPage) => previousPage - 1);
+        setEndOfPaging(false);
+        return (prevOffset - locationsLimit);
+      }
+      doSearch(0);
+      return 0;
+    });
+  };
+
+  const rightArrow = () => {
+    setLocationsOffset((prevOffset) => {
+      if (prevOffset + parseInt(locationsLimit, 10) < 5) {
+        if (!endOfPaging) setPage((prevPage) => prevPage + 1);
+        doSearch(parseInt(prevOffset, 10) + parseInt(locationsLimit, 10));
+        return (parseInt(prevOffset, 10) + parseInt(locationsLimit, 10));
+      }
+      doSearch(4);
+      return 4;
+    });
+  };
+
   useEffect(() => {
+    doSearch(locationsOffset);
     setHasNotch(StatusBar.currentHeight);
   }, []);
 
@@ -154,7 +202,7 @@ const Search = ({ navigation }) => {
         placeholder="Search"
         onChangeText={(text) => setSearchQuery(text)}
         value={searchQuery}
-        onIconPress={() => doSearch()}
+        onIconPress={() => doSearch(0)}
       />
 
       {loading ? <ActivityIndicator animating /> : (
@@ -182,7 +230,24 @@ const Search = ({ navigation }) => {
         overallQualityRating={[overallQualityRatingSearch, setOverallQualityRatingSearch]}
         overallClenlinessRating={[overallClenlinessRatingSearch, setOverallClenlinessRatingSearch]}
         searchIn={[searchIn, setSearchIn]}
+        locationsLimit={[locationsLimit, setLocationsLimit]}
+        locationsOffset={[locationsOffset, setLocationsOffset]}
+        page={[page, setPage]}
       />
+
+      {!loading ? (
+        <View style={[styles.paginationWrapper, styles.flexDirectionRow]}>
+          <Button
+            onPress={() => leftArrow()}
+            icon="arrow-left"
+          />
+          <Text>{`Page ${page}`}</Text>
+          <Button
+            onPress={() => rightArrow()}
+            icon="arrow-right"
+          />
+        </View>
+      ) : null}
 
     </View>
   );
