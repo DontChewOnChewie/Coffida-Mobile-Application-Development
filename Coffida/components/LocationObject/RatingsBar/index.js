@@ -13,7 +13,12 @@ const colours = ['#882e2e', '#d28738', '#ece16b', '#c8e866', '#94f05c', '#54a423
 // icon = Icon left of bar.
 // rating = Rating to display.
 
-const RatingsBar = ({ title, icon, rating }) => {
+const RatingsBar = ({
+  title,
+  icon,
+  rating,
+  small,
+}) => {
   const [colour, setColour] = useState(colours[0]);
 
   useEffect(() => {
@@ -24,7 +29,7 @@ const RatingsBar = ({ title, icon, rating }) => {
     <View
       accessible
       accessibilityLabel={`Overall ${title} is ${rating}.`}
-      style={styles.ratingContainer}
+      style={[styles.ratingContainer, small ? styles.width50 : null]}
     >
       <Text style={styles.ratingTitle}>{title}</Text>
       <MaterialIcons
@@ -52,6 +57,7 @@ RatingsBar.propTypes = {
   title: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
   rating: PropTypes.number.isRequired,
+  small: PropTypes.bool.isRequired,
 };
 
 export default RatingsBar;

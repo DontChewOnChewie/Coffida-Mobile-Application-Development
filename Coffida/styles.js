@@ -67,6 +67,8 @@ const styles = StyleSheet.create({
 
   width100: { width: '100%' },
 
+  width50: { width: '50%' },
+
   marginL10: { marginLeft: 10 },
 
   locationObjectSmallBorder: {

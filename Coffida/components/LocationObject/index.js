@@ -145,14 +145,23 @@ const LocationObject = ({
       ) : null }
       <Card.Actions style={styles.locationObjectActionsWrapper}>
         { navButton ? (
-          <Button
-            accessibilityHint={`Navigate to ${location.location_name} in ${location.location_town} page.`}
-            onPress={() => navigation.navigate('Location', { id: location.location_id })}
-            mode="contained"
-            icon="arrow-right"
-          >
-            Check Out
-          </Button>
+          <View style={[styles.width100, styles.flexDirectionRow, { justifyContent: 'space-between' }]}>
+            <RatingsBar
+              title="Overall Rating"
+              icon="star"
+              rating={location.avg_overall_rating != null ? location.avg_overall_rating : 0}
+              small
+            />
+
+            <Button
+              accessibilityHint={`Navigate to ${location.location_name} in ${location.location_town} page.`}
+              onPress={() => navigation.navigate('Location', { id: location.location_id })}
+              mode="contained"
+              icon="arrow-right"
+            >
+              Check Out
+            </Button>
+          </View>
         ) : (
           <View
             accessible
@@ -163,16 +172,19 @@ const LocationObject = ({
               title="Price Rating"
               icon="attach-money"
               rating={location.avg_price_rating != null ? location.avg_price_rating : 0}
+              small={false}
             />
             <RatingsBar
               title="Quality Rating"
               icon="star-rate"
               rating={location.avg_quality_rating != null ? location.avg_quality_rating : 0}
+              small={false}
             />
             <RatingsBar
               title="Clenliness Rating"
               icon="cleaning-services"
               rating={location.avg_clenliness_rating != null ? location.avg_clenliness_rating : 0}
+              small={false}
             />
           </View>
         )}
@@ -187,6 +199,7 @@ LocationObject.propTypes = {
     location_id: PropTypes.number,
     location_name: PropTypes.string,
     location_town: PropTypes.string,
+    avg_overall_rating: PropTypes.number,
     avg_price_rating: PropTypes.number,
     avg_quality_rating: PropTypes.number,
     avg_clenliness_rating: PropTypes.number,
