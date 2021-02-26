@@ -36,7 +36,7 @@ export const UserValidation = (firstName, secondName, email, password, confirmPa
   return true;
 };
 
-const bannedWords = ['tea', 'cakes', 'pastries', 'food', 'sandwiches'];
+const bannedWords = ['tea', 'cakes', 'cake', 'pastries', 'pastry', 'food', 'sandwiches', 'sandwich'];
 
 // Check inputted review numbers are valid.
 const RatingValidation = (priceReview, qualityReview, clenlinessReview) => {
